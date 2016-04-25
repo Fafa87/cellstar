@@ -1,0 +1,9 @@
+*.egg-info/
+*.iml
+*.pyc
+.cache/
+.eggs/
+.idea/
+.python-version
+build/
+dist/

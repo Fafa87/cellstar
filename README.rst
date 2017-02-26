@@ -10,5 +10,5 @@ CellStar is one of such algorithms. It is optimized to segment and track images 
 
 Details
 -------
-See our website http://www.cellstar-algorithm.org/ where you can find not only matlab and plugin version of the algorithm but also a comprehensive set of example usages with ready to use pipelines for varies imagery - `Example usages document <https://drive.google.com/file/d/0B3to8FwFxuTHNnJZbXRIdTdWTFE/view.>`_.
+See our website http://www.cellstar-algorithm.org/ where you can find not only matlab and plugin version of the algorithm but also a comprehensive set of example usages with ready to use pipelines for varies imagery - `Example usages document <https://drive.google.com/file/d/0B3to8FwFxuTHNnJZbXRIdTdWTFE/view>`_
 

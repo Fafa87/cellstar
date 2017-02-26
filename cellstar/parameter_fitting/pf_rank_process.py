@@ -31,10 +31,6 @@ from cell_star.parameter_fitting.pf_auto_params import pf_parameters_encode, pf_
     pf_rank_parameters_decode, RankBounds
 from cell_star.parameter_fitting.pf_mutator import *
 
-import cellprofiler.preferences
-
-get_max_workers = cellprofiler.preferences.get_max_workers
-
 #
 #
 # PROGRESS CALLBACKS

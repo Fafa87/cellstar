@@ -30,9 +30,10 @@ from cell_star.core.seeder import Seeder
 from cell_star.utils.debug_util import explore_cellstar
 from cell_star.parameter_fitting.pf_auto_params import pf_parameters_encode, pf_parameters_decode
 
-import cellprofiler.preferences
-
-get_max_workers = cellprofiler.preferences.get_max_workers
+try:
+    from cellprofiler.preferences import get_max_workers
+except:
+    get_max_workers = lambda: 1
 
 min_number_of_chosen_seeds = 6
 

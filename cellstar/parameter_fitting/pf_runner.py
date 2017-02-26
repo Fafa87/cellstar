@@ -10,11 +10,15 @@ import sys
 import numpy as np
 import scipy as sp
 
-from cellprofiler.preferences import get_max_workers
 import cell_star.parameter_fitting.pf_process as pf_process
 import cell_star.parameter_fitting.pf_rank_process as pf_rank
 from cell_star.parameter_fitting.pf_snake import GTSnake
 
+try:
+    from cellprofiler.preferences import get_max_workers
+except:
+    get_max_workers = lambda: 1
+    
 logger = logging.getLogger(__name__)
 
 

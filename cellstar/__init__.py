@@ -5,3 +5,4 @@ Date: 2013-2016
 Website: http://cellstar-algorithm.org/
 """
 __author__ = 'Adam Kaczmarek, Filip Mróz, Szymon Stoma'
+__all__ = ["segmentation"]

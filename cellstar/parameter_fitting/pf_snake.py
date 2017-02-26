@@ -1,29 +1,35 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Adam Kaczmarek, Filip Mróz'
+"""
+PFSnake represents one grown from a seed contour within a ground truth contour used in contour parameters fitting.
+GTSnake represents one ground truth contour.
+Date: 2013-2016
+Website: http://cellstar-algorithm.org/
+"""
 
 import copy
 import random
+
 random.seed(1)  # make it deterministic
 import numpy as np
+import scipy.ndimage.morphology as morph
 import scipy.ndimage.measurements as measure
 
-from contrib.cell_star.core.seed import Seed
-from contrib.cell_star.core.snake import Snake
-from contrib.cell_star.core.polar_transform import PolarTransform
+from cell_star.core.seed import Seed
+from cell_star.core.snake import Snake
+from cell_star.core.polar_transform import PolarTransform
 
 
 class PFSnake(object):
-
     def __init__(self, seed, image_repo, params, best_snake=None):
         if seed is not None:
-
-            self.fit = 0.0  # MINIMAL FIT
+            self.fit = 0.0
             self.seed = seed
             self.snakes = []
             self.images = image_repo
             self.initial_parameters = params
             self.point_number = params["segmentation"]["stars"]["points"]
             self.orig_size_weight_list = params["segmentation"]["stars"]["sizeWeight"]
+
             if isinstance(self.orig_size_weight_list, float):
                 self.orig_size_weight_list = [self.orig_size_weight_list]
             self.avg_cell_diameter = params["segmentation"]["avgCellDiameter"]
@@ -47,16 +53,20 @@ class PFSnake(object):
     def merge_parameters_with_me(self, new_params):
         return PFSnake.merge_parameters(self.initial_parameters, new_params)
 
-    def grow(self, supplementary_parameters):
-        new_parameters = self.merge_parameters_with_me(supplementary_parameters)
+    def grow(self, supplementary_parameters=None):
+        if supplementary_parameters is None:
+            new_parameters = copy.deepcopy(self.initial_parameters)
+        else:
+            new_parameters = self.merge_parameters_with_me(supplementary_parameters)
+
         s = Snake.create_from_seed(new_parameters, self.seed, self.point_number, self.images)
 
         size_weight_list = new_parameters["segmentation"]["stars"]["sizeWeight"]
         snakes_to_grow = [(copy.copy(s), w) for w in size_weight_list]
 
         for snake, weight in snakes_to_grow:
-            snake.star_grow(size_weight=weight, polar_transform=self.polar_transform)
-            snake.calculate_properties_vec(self.polar_transform)
+            snake.grow(size_weight=weight, polar_transform=self.polar_transform)
+            snake.evaluate(self.polar_transform)
 
         self.snakes = [grown_snake for grown_snake, _ in snakes_to_grow]
         self.best_snake = sorted(snakes_to_grow, key=lambda (sn, _): sn.rank)[0][0]
@@ -87,26 +97,50 @@ class PFSnake(object):
         return np.count_nonzero(intersection_local)
 
     @staticmethod
+    def out_of_gt_penalty(snake_area, gt_snake_area, intersection):
+        snake_less_gt = snake_area - intersection
+        snake_less_gt_percent = snake_less_gt / gt_snake_area * 100
+        if snake_less_gt_percent < 20:
+            return 1
+        elif snake_less_gt_percent < 80:
+            return 1.3
+        else:
+            return 2
+
+    @staticmethod
     def fitness_with_gt(snake, gt_snake):
         intersection = PFSnake.gt_snake_intersection(snake, gt_snake)
-        return intersection / (snake.area + gt_snake.area - intersection)
+        return intersection / (
+        gt_snake.area + (snake.area - intersection) * PFSnake.out_of_gt_penalty(snake.area, gt_snake.area,
+                                                                                intersection))
 
     def multi_fitness(self, gt_snake):
         return max([PFSnake.fitness_with_gt(pf_snake, gt_snake) for pf_snake in self.snakes])
 
 
-
 class GTSnake(object):
-
     def __init__(self, binary_mask, seed=None):
         self.binary_mask = binary_mask
+        self.eroded_mask = morph.binary_erosion(binary_mask, np.ones((3, 3)))
         self.area = np.count_nonzero(self.binary_mask)
         if seed is not None:
             self.seed = seed
             self.centroid_x, self.centroid_y = seed.x, seed.y
         else:
-            self._calculate_centroids(binary_mask)
+            self.calculate_centroids(binary_mask)
             self.seed = Seed(self.centroid_x, self.centroid_y, "gt_snake")
 
-    def _calculate_centroids(self, binary_mask):
+    def calculate_centroids(self, binary_mask):
         self.centroid_y, self.centroid_x = measure.center_of_mass(binary_mask, binary_mask, [1])[0]
+
+    def set_erosion(self, size):
+        self.eroded_mask = morph.binary_erosion(self.binary_mask, np.ones((size, size)))
+
+    def is_inside(self, x, y):
+        """
+        Check if seed is inside of eroded mask.
+        @type seed: Seed
+        """
+        if x < 0 or x >= self.eroded_mask.shape[1] or y < 0 or y >= self.eroded_mask.shape[0]:
+            return False
+        return self.eroded_mask[y, x]

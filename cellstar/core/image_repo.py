@@ -7,7 +7,7 @@ Website: http://cellstar-algorithm.org/
 
 import math
 
-from contrib.cell_star.utils.image_util import *
+from cell_star.utils.image_util import *
 
 
 class ImageRepo(object):
@@ -22,6 +22,10 @@ class ImageRepo(object):
             self.calculate_background()
 
         return self._background
+
+    @background.setter
+    def background(self, new_background):
+        self._background = new_background
 
     @property
     def brighter(self):
@@ -100,6 +104,24 @@ class ImageRepo(object):
 
         return self._segmentation
 
+    @property
+    def mask(self):
+        if self._mask is None:
+            self._mask = np.ones(self._image_original.shape, dtype=bool)
+
+        return self._mask
+
+    def apply_mask(self, ignore_mask):
+        """
+        @param ignore_mask: binary mask of places which are to be ignored
+        @type ignore_mask: np.ndarray
+        """
+        use_mask = np.logical_not(ignore_mask)
+        masked_image = self._image_original * use_mask
+        filler_value = np.median(masked_image)
+        self.image = masked_image + filler_value * ignore_mask
+        self._mask = use_mask
+
     def __init__(self, image, parameters):
         """
         @param image: 0-1 float array
@@ -110,7 +132,9 @@ class ImageRepo(object):
 
         # float arrays
         self.image = image
+        self._image_original = image
         self._background = None
+        self._mask = None
         self._brighter_original = None
         self._darker_original = None
         self._clean_original = None
@@ -159,9 +183,13 @@ class ImageRepo(object):
                                       )
             background_mask = np.logical_not(foreground_mask)
 
+        if self._mask is not None:
+            background_mask |= np.logical_not(self._mask)
+
         filler_value = np.median(self.image)
         background = self.image.astype(float)
         foreground_mask = np.logical_not(background_mask)
+
         if background_mask.any():
             filler_value = np.median(background[background_mask])
 
@@ -173,7 +201,7 @@ class ImageRepo(object):
         steps = self.parameters["segmentation"]["background"]["blurSteps"]
 
         for i in xrange(steps):
-            background = image_smooth(background, 1 + round(smooth_radius * ((steps - i) / steps) ** 2))
+            background = image_smooth(background, 1 + round(smooth_radius * ((steps - i) / steps) ** 2), i != 0)
             background = background * foreground_mask + self.image * background_mask
 
         self._background = background
@@ -224,6 +252,9 @@ class ImageRepo(object):
                                   self.parameters["segmentation"]["foreground"]["MaskMinRadius"]
                                   * self.parameters["segmentation"]["avgCellDiameter"]
                                   )
+
+        if self._mask is not None:
+            self._foreground_mask &= self._mask
 
         self._background_mask = np.logical_not(self.foreground_mask)
 

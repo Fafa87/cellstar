@@ -6,9 +6,9 @@ Website: http://cellstar-algorithm.org/
 """
 import random
 
-from contrib.cell_star.core.seed import Seed
-from contrib.cell_star.utils.calc_util import *
-from contrib.cell_star.utils.image_util import *
+from cell_star.core.seed import Seed
+from cell_star.utils.calc_util import *
+from cell_star.utils.image_util import *
 
 
 class Seeder(object):
@@ -82,16 +82,22 @@ class Seeder(object):
         return seed_points
 
     @staticmethod
-    def rand_seeds(max_random_radius, times, seeds):
+    def rand_seeds(max_random_radius, times, seeds, min_random_radius=0):
         """
+        Generate (len(seeds) * times) random seeds within (min_random_radius:max_random_radius).
         @type seeds: list[Seed]
         """
-        seeds_number = len(seeds)
-        px = [s.x for s in seeds] * times
-        py = [s.y for s in seeds] * times
 
-        random_angle = np.random.random(seeds_number * times) * 2 * math.pi
-        random_radius = np.random.random(seeds_number * times) * max_random_radius
+        seeds_number = len(seeds)
+        new_seeds_number = int(seeds_number * times)
+
+        shuffled_seeds = list(seeds)
+        np.random.shuffle(shuffled_seeds)
+        px = multiply_list([s.x for s in shuffled_seeds], times)
+        py = multiply_list([s.y for s in shuffled_seeds], times)
+
+        random_angle = np.random.random(new_seeds_number) * 2 * math.pi
+        random_radius = np.random.random(new_seeds_number) * (max_random_radius - min_random_radius) + min_random_radius
 
         rpx = px + random_radius * np.cos(random_angle)
         rpy = py + random_radius * np.sin(random_angle)
@@ -219,28 +225,24 @@ class Seeder(object):
         # TODO: filter seeds using foreground mask ?
         # seeds = [seed for seed in seeds if self.images.foreground_mask[seed.y, seed.x]]
 
-        seeds = self._filter_seeds(seeds, all_seeds)
+        seeds = self.filter_seeds(self.images.image.shape, seeds, all_seeds)
 
         return seeds
 
-    def _filter_seeds(self, seeds, all_seeds):
+    def filter_seeds(self, image_shape, seeds, all_seeds):
         """
-        @param seeds:
-        @type seeds: [contrib.cell_star.core.seed.Seed]
+        Ignore seeds that are close image borders or already processed seeds.
+        @param image_shape: (y,x) image size
+        @type seeds: [cell_star.core.seed.Seed]
+        @type all_seeds: [cell_star.core.seed.Seed]
         @return:
         """
         distance = self.parameters["segmentation"]["stars"]["step"] * self.parameters["segmentation"]["avgCellDiameter"]
         distance = float(max(distance, 0.5))  # not less than half of pixel length
-        ok_seeds = np.array([False for seed in seeds])
+        ok_seeds = np.array([False for _ in seeds])
 
-        # TODO: obecnie parametr ustawiony na -1 - wykryć gdzie jest konfigurowany w MATLABIE
-        # Wygląda na to, że jest to lista wymiarów klatki/zdjęcia
-        # if self.parameters["segmentation"]["transform"]["originalImDim"] > 0:
-        grid_size = int(round(max(self.parameters["segmentation"]["transform"]["originalImDim"]) * 1.1 / distance))
-        im_x = self.parameters["segmentation"]["transform"]["originalImDim"][1]
-        im_y = self.parameters["segmentation"]["transform"]["originalImDim"][0]
-        # else:
-        #    grid_size = 10
+        grid_size = int(round(max(image_shape) * 1.1 / distance))
+        im_y, im_x = image_shape
 
         # Create grid
         seeds_grid = SeedGrid(grid_size)
@@ -277,16 +279,12 @@ class Seeder(object):
         return [seeds[i] for i in range(len(seeds)) if ok_seeds[i]]
 
 
-def seed_is_new(_seed, all_seeds, distance):
-    for seed in all_seeds:
-        if euclidean_norm(_seed.as_xy(), seed.as_xy()) < distance:
-            return False
-
-    return True
+def seed_is_new(seed, current_seeds, distance):
+    return all([euclidean_norm(seed.as_xy(), cs.as_xy()) >= distance for cs in current_seeds])
 
 
-def point_list_as_seeds(points, origin):
-    return [Seed(point[0], point[1], origin) for point in points]
+def point_list_as_seeds(pointsYX, origin):
+    return [Seed(point[0], point[1], origin) for point in pointsYX]
 
 
 class SeedGrid(object):

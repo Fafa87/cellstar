@@ -112,6 +112,7 @@ def get_gradient(im, index, border_thickness_steps):
     # matrix init
     # for each single step for each border thick. separated grad. is being computed
     # at the end the max. grad values are returned (for all steps of thickness)
+    border_thickness_steps = int(border_thickness_steps)
     gradients_for_steps = np.zeros((radius_lengths, angles, border_thickness_steps), dtype=np.float64)
 
     # for every step of thickness:

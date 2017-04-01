@@ -122,8 +122,8 @@ class PolarTransform(object):
         self.y = RR * sin_t
 
         self.half_edge = math.ceil(self.R[-1] + 2)
-        self.center = self.half_edge + 1
-        self.edge = self.center + self.half_edge
+        self.center = int(round(self.half_edge + 1))
+        self.edge = int(round(self.center + self.half_edge))
 
         # clear black image [edge x edge]
         self.dot_voronoi = np.zeros((self.edge, self.edge), dtype=int)

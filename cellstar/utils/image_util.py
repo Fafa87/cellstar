@@ -144,7 +144,7 @@ def fill_holes(mask, kernel_size, minimal_hole_size):
         components, num_components = sp.ndimage.label(np.logical_not(new_mask), np.ones((3, 3)))
         slices = sp.ndimage.find_objects(components)
         for label, slice in zip(range(1, num_components + 1), slices):
-            slice = extend_slices(slice, kernel_size * 2)
+            slice = extend_slices(slice, int(round(kernel_size * 2)))
             components_slice = components[slice] == label
             # filter small components
             if np.count_nonzero(components_slice) < minimal_hole_size:
@@ -225,7 +225,8 @@ def exclude_segments(image, segments, val):
 def image_median_filter(image, size):
     if size < 1:
         return image
-
+    
+    size = int(round(size))
     return median_filter(image, (size, size))
 
 
@@ -262,7 +263,8 @@ def image_smooth(image, radius, fft_use=True):
     if radius >= 8 and fft_use:
         image_2 = np.pad(image, int(radius), mode='reflect')
         res = fft_convolve(image_2, kernel, 1)
-        return res[radius:-radius, radius:-radius]
+        radius_round = int(round(radius))
+        return res[radius_round:-radius_round, radius_round:-radius_round]
     else:
         return convolve(image, kernel, mode='reflect', cval=0.0)
 

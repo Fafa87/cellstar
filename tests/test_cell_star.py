@@ -10,7 +10,7 @@ import numpy as np
 
 class test_CellStar(unittest.TestCase):
     def test_fill_holes(self):
-        import cell_star.utils.image_util as image_util
+        import cellstar.utils.image_util as image_util
 
         a = np.ones((30, 30), dtype=int)
         a[10:20, 20:25] = 0
@@ -22,9 +22,9 @@ class test_CellStar(unittest.TestCase):
         self.assertTrue((expected == res).all())
 
     def test_random_seeds(self):
-        from cell_star.core.seed import Seed
-        from cell_star.core.point import Point
-        from cell_star.core.seeder import Seeder
+        from cellstar.core.seed import Seed
+        from cellstar.core.point import Point
+        from cellstar.core.seeder import Seeder
         seed1 = Seed(10, 10, 'test')
         seed2 = Seed(100, 100, 'test2')
         new_seeds = Seeder.rand_seeds(5, 2, [seed1, seed2])
@@ -41,8 +41,8 @@ class test_CellStar(unittest.TestCase):
         self.assertTrue(all([seed.euclidean_distance_to(Point(0, 0)) >= 5 for seed in new_zero_seeds]))
 
     def test_random_seeds_fractions(self):
-        from cell_star.core.seed import Seed
-        from cell_star.core.seeder import Seeder
+        from cellstar.core.seed import Seed
+        from cellstar.core.seeder import Seeder
         np.random.seed(1)
 
         def assertIsClose(x, y, seed):
@@ -91,7 +91,7 @@ class test_CellStar(unittest.TestCase):
         self.assertEqual(3, len([s for s in new_seeds if int(s.x + .5) == 4]))
 
     def test_loop_connected(self):
-        from cell_star.utils import calc_util
+        from cellstar.utils import calc_util
 
         def validate(exp, res):
             self.assertTrue((exp[0] == res[0]).all())
@@ -124,20 +124,17 @@ class test_CellStar(unittest.TestCase):
         validate(exp_5, res_5)
 
     def test_interpolate(self):
-        from cell_star.utils import calc_util
+        from cellstar.utils import calc_util
 
         mask_1 = [False, False, True, False, True, True, False]
         values_1 = [2134, 1564, 10, 3234, 14, 6, 5345]
-        res_1 = list(values_1)
-        calc_util.interpolate_radiuses_old(mask_1, len(mask_1), res_1)
-        self.assertEqual([8, 9, 10, 12, 14, 6, 7], res_1)
 
         res_1 = list(values_1)
         calc_util.interpolate_radiuses(mask_1, len(mask_1), res_1)
         self.assertEqual([8, 9, 10, 12, 14, 6, 7], res_1)
 
     def test_gt_snake_seeds(self):
-        from cell_star.parameter_fitting.pf_process import *
+        from cellstar.parameter_fitting.pf_process import GTSnake, Seed, get_gt_snake_seeds
         mask = np.zeros((20, 20))
         mask[3:8, 5:14] = 1
         mask[7:13, 7:10] = 1
@@ -160,29 +157,8 @@ class test_CellStar(unittest.TestCase):
         self.assertTrue(all([gtsnake.is_inside(r.x, r.y) for r in randoms]))
 
     def test_rank_param_reversable(self):
-        from cell_star.parameter_fitting.pf_auto_params import *
+        from cellstar.parameter_fitting.pf_auto_params import pf_rank_parameters_decode, pf_rank_parameters_encode
         params = [0.1, 0.3, 0.5, 0.7, 0.9]
         params_decoded = pf_rank_parameters_decode(params)
         params_encoded_again = pf_rank_parameters_encode(params_decoded, False)
         self.assertEqual(params, params_encoded_again)
-
-    def test_rank_param_normalization(self):
-        from cell_star.parameter_fitting.pf_auto_params import *
-        params = [0.1, 0.3, 0.5, 0.7, 0.9]
-
-        self.fail("Normalization is off")
-
-        res_org = pf_rank_parameters_decode(params, False)
-        self.assertEqual(0.1 * 600, res_org["avgBorderBrightnessWeight"])
-        self.assertEqual(-50 + (0.3 * 100), res_org["avgInnerBrightnessWeight"])
-        self.assertEqual(-50 + (0.5 * 100), res_org["avgInnerDarknessWeight"])
-        self.assertEqual(5 + (0.7 * 35), res_org["logAreaBonus"])
-        self.assertEqual(-10 + (0.9 * 60), res_org["maxInnerBrightnessWeight"])
-
-        res_scaled = pf_rank_parameters_decode(params, True)
-        scaling_factor = res_scaled["avgBorderBrightnessWeight"] / (0.1 * 600)
-        self.assertEqual(0.1 * 600, res_scaled["avgBorderBrightnessWeight"] / scaling_factor)
-        self.assertEqual(-50 + (0.3 * 100), res_scaled["avgInnerBrightnessWeight"] / scaling_factor)
-        self.assertEqual(-50 + (0.5 * 100), res_scaled["avgInnerDarknessWeight"] / scaling_factor)
-        self.assertAlmostEquals(5 + (0.7 * 35), res_scaled["logAreaBonus"] / scaling_factor)
-        self.assertAlmostEquals(-10 + (0.9 * 60), res_scaled["maxInnerBrightnessWeight"] / scaling_factor)

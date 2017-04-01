@@ -19,8 +19,8 @@ class Test(setuptools.Command):
         sys.exit(errno)
 
 setuptools.setup(
-        author="",
-        author_email="",
+        author="Filip Mroz",
+        author_email="fafafft@gmail.com",
         classifiers=[
             "Development Status :: 5 - Production/Stable",
             "Intended Audience :: Science/Research",
@@ -51,11 +51,11 @@ setuptools.setup(
         long_description="",
         name="CellStar",
         packages=setuptools.find_packages(exclude=[
-            "tests"
+            "tests", "utils"
         ]),
         setup_requires=[
             "pytest"
         ],
         url="https://github.com/CellProfiler/cellstar",
-        version="1.0.0rc1"
+        version="1.2.3rc1"
 )

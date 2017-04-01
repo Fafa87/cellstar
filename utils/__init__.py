@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Tests package contains various unit tests and utilities for testing and debugging CellStar.
+Utils package contains various utilities for testing and debugging CellStar.
 Date: 2013-2016
 Website: http://cellstar-algorithm.org/
 """

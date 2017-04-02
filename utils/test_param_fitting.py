@@ -14,8 +14,8 @@ import cellstar.parameter_fitting.pf_rank_process as pf_rank
 import cellstar.utils.debug_util as debug_util
 from cellstar.segmentation import Segmentation
 
-import cellstar.tests.test_contour_pf as test_pf
-from cellstar.tests.test_rank_pf import test_rank_pf
+import test_contour_pf as test_pf
+from test_rank_pf import test_rank_pf
 
 logger = logging.getLogger(__name__)
 

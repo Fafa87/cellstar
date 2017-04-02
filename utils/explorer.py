@@ -16,9 +16,10 @@ import cellstar.utils.debug_util as debug_util
 from cellstar.core.image_repo import ImageRepo
 from cellstar.parameter_fitting.pf_snake import *
 from cellstar.segmentation import Segmentation
-from cellstar.tests.experiments import *
 from cellstar.utils.debug_util import draw_snakes_on_axes, draw_seeds_on_axes
 from cellstar.utils.image_util import load_image
+
+from experiments import *
 
 
 class Explorer:

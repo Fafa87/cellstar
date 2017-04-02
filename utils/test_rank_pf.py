@@ -11,10 +11,11 @@ import sys
 import numpy as np
 
 import cellstar.parameter_fitting.pf_rank_process as pf_rank
-import cellstar.tests.test_contour_pf as test_pf
 import cellstar.utils.debug_util as debug_util
 from cellstar.segmentation import Segmentation
-from cellstar.tests.test_contour_pf import try_load_image, image_to_label, gt_label_to_snakes
+
+import test_contour_pf as test_pf
+from test_contour_pf import try_load_image, image_to_label, gt_label_to_snakes
 
 
 def test_rank_pf(image_path, mask_path, precision, avg_cell_diameter, method, initial_params=None, options=None, callback_progress=None):

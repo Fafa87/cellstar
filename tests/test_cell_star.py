@@ -6,9 +6,11 @@ Website: http://cellstar-algorithm.org/
 """
 
 import unittest
+
 import numpy as np
 
-class test_CellStar(unittest.TestCase):
+
+class TestCellStar(unittest.TestCase):
     def test_fill_holes(self):
         import cellstar.utils.image_util as image_util
 

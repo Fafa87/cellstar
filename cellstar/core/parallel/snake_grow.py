@@ -12,10 +12,10 @@ from multiprocessing import Pool, Array, Manager
 
 import numpy as np
 
-from cell_star.core.image_repo import ImageRepo
-from cell_star.core.polar_transform import PolarTransform
-from cell_star.core.snake import Snake
-from cell_star.parameter_fitting.pf_snake import PFSnake
+from cellstar.core.image_repo import ImageRepo
+from cellstar.core.polar_transform import PolarTransform
+from cellstar.core.snake import Snake
+from cellstar.parameter_fitting.pf_snake import PFSnake
 
 
 def conv_single_image(image):

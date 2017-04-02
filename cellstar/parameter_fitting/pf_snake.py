@@ -14,9 +14,9 @@ import numpy as np
 import scipy.ndimage.morphology as morph
 import scipy.ndimage.measurements as measure
 
-from cell_star.core.seed import Seed
-from cell_star.core.snake import Snake
-from cell_star.core.polar_transform import PolarTransform
+from cellstar.core.seed import Seed
+from cellstar.core.snake import Snake
+from cellstar.core.polar_transform import PolarTransform
 
 
 class PFSnake(object):

@@ -7,7 +7,7 @@ Website: http://cellstar-algorithm.org/
 
 import numpy as np
 
-from cell_star.core.config import default_config
+from cellstar.core.config import default_config
 
 
 def default_parameters(segmentation_precision=-1, avg_cell_diameter=-1):

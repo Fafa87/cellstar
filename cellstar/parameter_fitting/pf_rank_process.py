@@ -20,16 +20,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from cell_star.utils.params_util import *
-from cell_star.core.image_repo import ImageRepo
-from cell_star.core.snake_filter import SnakeFilter
-from cell_star.utils.debug_util import explore_cellstar
-from cell_star.parameter_fitting.pf_process import get_gt_snake_seeds, grow_single_seed, \
+from cellstar.utils.params_util import *
+from cellstar.core.image_repo import ImageRepo
+from cellstar.core.snake_filter import SnakeFilter
+from cellstar.utils.debug_util import explore_cellstar
+from cellstar.parameter_fitting.pf_process import get_gt_snake_seeds, grow_single_seed, \
     general_multiproc_fitting
-from cell_star.parameter_fitting.pf_rank_snake import PFRankSnake
-from cell_star.parameter_fitting.pf_auto_params import pf_parameters_encode, pf_rank_parameters_encode, \
+from cellstar.parameter_fitting.pf_rank_snake import PFRankSnake
+from cellstar.parameter_fitting.pf_auto_params import pf_parameters_encode, pf_rank_parameters_encode, \
     pf_rank_parameters_decode, RankBounds
-from cell_star.parameter_fitting.pf_mutator import *
+from cellstar.parameter_fitting.pf_mutator import *
 
 #
 #

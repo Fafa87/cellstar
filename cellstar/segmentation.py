@@ -11,16 +11,16 @@ import logging
 logger = logging.getLogger(__name__)
 from copy import copy
 
-from cell_star.utils.params_util import *
-from cell_star.core.image_repo import ImageRepo
-from cell_star.utils.params_util import default_parameters
-from cell_star.utils import image_util, debug_util
-from cell_star.core.seeder import Seeder
-from cell_star.core.snake import Snake
-from cell_star.core.snake_filter import SnakeFilter
-from cell_star.core.polar_transform import PolarTransform
-from cell_star.parameter_fitting.pf_auto_params import rank_parameters_range as rank_auto_params
-from cell_star.parameter_fitting.pf_auto_params import parameters_range as snake_auto_params
+from cellstar.utils.params_util import *
+from cellstar.core.image_repo import ImageRepo
+from cellstar.utils.params_util import default_parameters
+from cellstar.utils import image_util, debug_util
+from cellstar.core.seeder import Seeder
+from cellstar.core.snake import Snake
+from cellstar.core.snake_filter import SnakeFilter
+from cellstar.core.polar_transform import PolarTransform
+from cellstar.parameter_fitting.pf_auto_params import rank_parameters_range as rank_auto_params
+from cellstar.parameter_fitting.pf_auto_params import parameters_range as snake_auto_params
 
 
 class Segmentation(object):

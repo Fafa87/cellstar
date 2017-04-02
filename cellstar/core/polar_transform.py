@@ -10,8 +10,8 @@ import threading
 
 import numpy as np
 
-from cell_star.utils.calc_util import sub2ind
-from cell_star.utils.image_util import image_dilate_with_element, get_circle_kernel
+from cellstar.utils.calc_util import sub2ind
+from cellstar.utils.image_util import image_dilate_with_element, get_circle_kernel
 
 
 class PolarTransform(object):

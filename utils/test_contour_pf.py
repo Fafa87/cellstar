@@ -10,12 +10,12 @@ import sys
 
 import numpy as np
 
-import cell_star.parameter_fitting.pf_process as pf_process
-from cell_star.parameter_fitting.pf_process import run
-from cell_star.parameter_fitting.pf_runner import gt_label_to_snakes, image_to_label
-from cell_star.segmentation import Segmentation
-from cell_star.utils import image_util, debug_util
-from cell_star.utils.debug_util import image_show, image_save
+import cellstar.parameter_fitting.pf_process as pf_process
+from cellstar.parameter_fitting.pf_process import run
+from cellstar.parameter_fitting.pf_runner import gt_label_to_snakes, image_to_label
+from cellstar.segmentation import Segmentation
+from cellstar.utils import image_util, debug_util
+from cellstar.utils.debug_util import image_show, image_save
 
 global default_data_path
 default_data_path = "."
@@ -93,14 +93,14 @@ if __name__ == "__main__":
         print "Given: " + " ".join(sys.argv)
         sys.exit(-1)
 
-    # from cell_star.core.snake import Snake
-    # from cell_star.tests.experiments import smooth_contour_turns
+    # from cellstar.core.snake import Snake
+    # from cellstar.tests.experiments import smooth_contour_turns
     # Snake.smooth_contour = smooth_contour_turns
 
     pf_process.get_max_workers = lambda: 2
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
-    logger = logging.getLogger('cell_star.parameter_fitting')
+    logger = logging.getLogger('cellstar.parameter_fitting')
     logger.setLevel(logging.DEBUG)
     logger.addHandler(ch)
     default_data_path = sys.argv[1]

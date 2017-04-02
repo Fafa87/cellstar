@@ -10,11 +10,11 @@ import sys
 
 import numpy as np
 
-import cell_star.parameter_fitting.pf_rank_process as pf_rank
-import cell_star.tests.test_contour_pf as test_pf
-import cell_star.utils.debug_util as debug_util
-from cell_star.segmentation import Segmentation
-from cell_star.tests.test_contour_pf import try_load_image, image_to_label, gt_label_to_snakes
+import cellstar.parameter_fitting.pf_rank_process as pf_rank
+import cellstar.tests.test_contour_pf as test_pf
+import cellstar.utils.debug_util as debug_util
+from cellstar.segmentation import Segmentation
+from cellstar.tests.test_contour_pf import try_load_image, image_to_label, gt_label_to_snakes
 
 
 def test_rank_pf(image_path, mask_path, precision, avg_cell_diameter, method, initial_params=None, options=None, callback_progress=None):
@@ -43,14 +43,14 @@ if __name__ == "__main__":
         print "Given: " + " ".join(sys.argv)
         sys.exit(-1)
 
-    # from cell_star.core.snake import Snake
-    # from cell_star.tests.experiments import smooth_contour_turns
+    # from cellstar.core.snake import Snake
+    # from cellstar.tests.experiments import smooth_contour_turns
     # Snake.smooth_contour = smooth_contour_turns
 
     pf_rank.get_max_workers = lambda: 2
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
-    logger = logging.getLogger('cell_star.parameter_fitting')
+    logger = logging.getLogger('cellstar.parameter_fitting')
     logger.setLevel(logging.DEBUG)
     logger.addHandler(ch)
     test_pf.default_data_path = sys.argv[1]

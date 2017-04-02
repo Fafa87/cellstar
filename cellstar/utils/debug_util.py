@@ -12,7 +12,7 @@ from os.path import exists
 import numpy as np
 import scipy as sp
 
-from cell_star.core import image_repo
+from cellstar.core import image_repo
 
 debug_image_path = "debug"
 
@@ -157,7 +157,7 @@ def explore_cellstar(cellstar=None, seeds=[], snakes=[], images=None, image=None
             except:
                 pass
 
-            import cell_star.tests.explorer as exp
+            import cellstar.tests.explorer as exp
             if image is None:
                 image = cellstar.images.image
             if images is None:

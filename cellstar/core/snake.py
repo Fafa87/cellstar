@@ -9,10 +9,10 @@ import math
 
 import numpy as np
 
-from cell_star.core.point import Point
-from cell_star.utils import calc_util, image_util
-from cell_star.utils.debug_util import *
-from cell_star.utils.index import Index
+from cellstar.core.point import Point
+from cellstar.utils import calc_util, image_util
+from cellstar.utils.debug_util import *
+from cellstar.utils.index import Index
 
 
 class Snake(object):
@@ -88,7 +88,7 @@ class Snake(object):
     def grow(self, size_weight, polar_transform):
         """
         Grow the snake from seed.
-        @type polar_transform: cell_star.core.vectorized.polar_transform.PolarTransform
+        @type polar_transform: cellstar.core.vectorized.polar_transform.PolarTransform
         @type size_weight: float
         """
 
@@ -256,7 +256,7 @@ class Snake(object):
     def evaluate(self, polar_transform):
         """
         Analyse contour and calculate all it properties and ranking.
-        @type polar_transform: cell_star.core.vectorized.polar_transform.PolarTransform
+        @type polar_transform: cellstar.core.vectorized.polar_transform.PolarTransform
         """
 
         # Potentially prevent unnecessary calculations

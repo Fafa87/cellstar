@@ -10,8 +10,8 @@ import random
 
 random.seed(1)  # make it deterministic
 
-from cell_star.core.polar_transform import PolarTransform
-from cell_star.parameter_fitting.pf_snake import PFSnake
+from cellstar.core.polar_transform import PolarTransform
+from cellstar.parameter_fitting.pf_snake import PFSnake
 import pf_mutator
 
 

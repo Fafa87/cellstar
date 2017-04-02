@@ -12,13 +12,13 @@ import wx
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as Canvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
 
-import cell_star.utils.debug_util as debug_util
-from cell_star.core.image_repo import ImageRepo
-from cell_star.parameter_fitting.pf_snake import *
-from cell_star.segmentation import Segmentation
-from cell_star.tests.experiments import *
-from cell_star.utils.debug_util import draw_snakes_on_axes, draw_seeds_on_axes
-from cell_star.utils.image_util import load_image
+import cellstar.utils.debug_util as debug_util
+from cellstar.core.image_repo import ImageRepo
+from cellstar.parameter_fitting.pf_snake import *
+from cellstar.segmentation import Segmentation
+from cellstar.tests.experiments import *
+from cellstar.utils.debug_util import draw_snakes_on_axes, draw_seeds_on_axes
+from cellstar.utils.image_util import load_image
 
 
 class Explorer:
@@ -35,11 +35,11 @@ class Explorer:
         self.ui.press = self.manage_press
         if cell_star is None:
             self.cell_star = Segmentation(11, params["segmentation"]["avgCellDiameter"])
-            self.cell_star.parameters = params
-            self.cell_star.set_frame(image)
-            self.cell_star.images = images
-            self.image = self.cell_star.images.image
-            self.images = self.cell_star.images
+            self.cellstar.parameters = params
+            self.cellstar.set_frame(image)
+            self.cellstar.images = images
+            self.image = self.cellstar.images.image
+            self.images = self.cellstar.images
         else:
             self.cell_star = cell_star
         self.clear()
@@ -67,10 +67,10 @@ class Explorer:
     def manage_press(self, key):
         if key == 's':
             self.clear()
-            self.cell_star.find_seeds(False)
-            seeds = self.cell_star.all_seeds
-            self.cell_star.all_seeds = []
-            self.cell_star.seeds = []
+            self.cellstar.find_seeds(False)
+            seeds = self.cellstar.all_seeds
+            self.cellstar.all_seeds = []
+            self.cellstar.seeds = []
             draw_seeds_on_axes(seeds, self.ui.axes)
         if key == 'a' and len(self.snakes) >= 1:  # rerank all snakes
             self.ui.axes.lines = []
@@ -93,7 +93,7 @@ class Explorer:
             draw_snakes_on_axes(sorted(self.stick_snakes, key=lambda s: -s.rank), self.ui.axes)
             draw_seeds_on_axes(self.stick_seeds, self.ui.axes)
         elif key == 'Z':
-            self.recalculate_rank(self.cell_star.parameters, self.stick_snakes)
+            self.recalculate_rank(self.cellstar.parameters, self.stick_snakes)
             draw_snakes_on_axes(sorted(self.stick_snakes, key=lambda s: -s.rank), self.ui.axes)
             draw_seeds_on_axes(self.stick_seeds, self.ui.axes)
 
@@ -106,7 +106,7 @@ class Explorer:
                                              params["segmentation"]["avgCellDiameter"])
 
     def grow_and_show(self, x, y):
-        pfsnake = PFSnake(Seed(x, y, "click"), self.images, self.cell_star.parameters)
+        pfsnake = PFSnake(Seed(x, y, "click"), self.images, self.cellstar.parameters)
         pfsnake.grow()
         self.pfsnakes += [pfsnake]
         self.snakes += pfsnake.snakes
@@ -209,10 +209,10 @@ if __name__ == "__main__":
     # read1 = load_image(p1)
 
     cell_star = Segmentation(12, average_cell_diameter)
-    cell_star.set_frame(image)
-    cell_star.pre_process()
+    cellstar.set_frame(image)
+    cellstar.pre_process()
 
     app = wx.App(0)
-    explorer_ui = ExplorerFrame(cell_star.images)
-    explorer = Explorer(image, cell_star.images, explorer_ui, cell_star)
+    explorer_ui = ExplorerFrame(cellstar.images)
+    explorer = Explorer(image, cellstar.images, explorer_ui, cell_star)
     app.MainLoop()

@@ -10,7 +10,7 @@ import math
 
 import numpy as np
 
-from cell_star.core.snake import Snake
+from cellstar.core.snake import Snake
 
 
 class SnakeFilter(object):

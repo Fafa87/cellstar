@@ -22,13 +22,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from cell_star.utils.params_util import *
-from cell_star.core.seed import Seed
-from cell_star.core.image_repo import ImageRepo
-from cell_star.parameter_fitting.pf_snake import PFSnake, GTSnake
-from cell_star.core.seeder import Seeder
-from cell_star.utils.debug_util import explore_cellstar
-from cell_star.parameter_fitting.pf_auto_params import pf_parameters_encode, pf_parameters_decode
+from cellstar.utils.params_util import *
+from cellstar.core.seed import Seed
+from cellstar.core.image_repo import ImageRepo
+from cellstar.parameter_fitting.pf_snake import PFSnake, GTSnake
+from cellstar.core.seeder import Seeder
+from cellstar.utils.debug_util import explore_cellstar
+from cellstar.parameter_fitting.pf_auto_params import pf_parameters_encode, pf_parameters_decode
 
 try:
     from cellprofiler.preferences import get_max_workers

@@ -7,7 +7,7 @@ Website: http://cellstar-algorithm.org/
 
 import math
 
-from cell_star.utils.image_util import *
+from cellstar.utils.image_util import *
 
 
 class ImageRepo(object):

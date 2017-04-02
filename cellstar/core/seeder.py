@@ -6,9 +6,9 @@ Website: http://cellstar-algorithm.org/
 """
 import random
 
-from cell_star.core.seed import Seed
-from cell_star.utils.calc_util import *
-from cell_star.utils.image_util import *
+from cellstar.core.seed import Seed
+from cellstar.utils.calc_util import *
+from cellstar.utils.image_util import *
 
 
 class Seeder(object):
@@ -233,8 +233,8 @@ class Seeder(object):
         """
         Ignore seeds that are close image borders or already processed seeds.
         @param image_shape: (y,x) image size
-        @type seeds: [cell_star.core.seed.Seed]
-        @type all_seeds: [cell_star.core.seed.Seed]
+        @type seeds: [cellstar.core.seed.Seed]
+        @type all_seeds: [cellstar.core.seed.Seed]
         @return:
         """
         distance = self.parameters["segmentation"]["stars"]["step"] * self.parameters["segmentation"]["avgCellDiameter"]

@@ -10,8 +10,8 @@ import random
 
 import numpy as np
 
-from cell_star.core.point import *
-from cell_star.utils.calc_util import polar_to_cartesian
+from cellstar.core.point import *
+from cellstar.utils.calc_util import polar_to_cartesian
 
 
 def add_mutations(gt_and_grown, avg_cell_diameter):

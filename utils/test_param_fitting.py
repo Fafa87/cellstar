@@ -9,13 +9,13 @@ Website: http://cellstar-algorithm.org/
 import logging
 import sys
 
-import cell_star.tests.test_contour_pf as test_pf
+import cellstar.parameter_fitting.pf_process as pf_process
+import cellstar.parameter_fitting.pf_rank_process as pf_rank
+import cellstar.utils.debug_util as debug_util
+from cellstar.segmentation import Segmentation
 
-import cell_star.parameter_fitting.pf_process as pf_process
-import cell_star.parameter_fitting.pf_rank_process as pf_rank
-import cell_star.utils.debug_util as debug_util
-from cell_star.segmentation import Segmentation
-from cell_star.tests.test_rank_pf import test_rank_pf
+import cellstar.tests.test_contour_pf as test_pf
+from cellstar.tests.test_rank_pf import test_rank_pf
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         sys.exit(-1)
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
-    logger = logging.getLogger('cell_star.parameter_fitting')
+    logger = logging.getLogger('cellstar.parameter_fitting')
     logger.setLevel(logging.DEBUG)
     logger.addHandler(ch)
 
@@ -55,8 +55,8 @@ if __name__ == "__main__":
         if sys.argv[8] == '-O':
             options = sys.argv[9]
 
-    #from cell_star.core.snake import Snake
-    #from cell_star.tests.experiments import smooth_contour_turns
+    #from cellstar.core.snake import Snake
+    #from cellstar.tests.experiments import smooth_contour_turns
     #Snake.smooth_contour = smooth_contour_turns
 
     test_pf.default_data_path = sys.argv[1]
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     precision = int(sys.argv[4])
     avg_cell_diameter = float(sys.argv[5])
 
-    #from cell_star.utils.params_util import default_parameters
+    #from cellstar.utils.params_util import default_parameters
     #default = default_parameters(segmentation_precision=precision, avg_cell_diameter=avg_cell_diameter)
 
     #complete_params = full_params_contour

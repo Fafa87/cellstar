@@ -14,6 +14,7 @@ import numpy as np
 import scipy.ndimage.morphology as morph
 import scipy.ndimage.measurements as measure
 
+from cellstar.utils.calc_util import to_int
 from cellstar.core.seed import Seed
 from cellstar.core.snake import Snake
 from cellstar.core.polar_transform import PolarTransform
@@ -141,6 +142,8 @@ class GTSnake(object):
         Check if seed is inside of eroded mask.
         @type seed: Seed
         """
+        x = to_int(x)
+        y = to_int(y)
         if x < 0 or x >= self.eroded_mask.shape[1] or y < 0 or y >= self.eroded_mask.shape[0]:
             return False
         return self.eroded_mask[y, x]

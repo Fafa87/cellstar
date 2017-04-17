@@ -10,6 +10,7 @@ import threading
 
 import numpy as np
 
+from cellstar.utils.calc_util import to_int
 from cellstar.utils.calc_util import sub2ind
 from cellstar.utils.image_util import image_dilate_with_element, get_circle_kernel
 
@@ -122,8 +123,8 @@ class PolarTransform(object):
         self.y = RR * sin_t
 
         self.half_edge = math.ceil(self.R[-1] + 2)
-        self.center = int(round(self.half_edge + 1))
-        self.edge = int(round(self.center + self.half_edge))
+        self.center = to_int(self.half_edge + 1)
+        self.edge = to_int(self.center + self.half_edge)
 
         # clear black image [edge x edge]
         self.dot_voronoi = np.zeros((self.edge, self.edge), dtype=int)

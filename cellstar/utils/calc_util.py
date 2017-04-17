@@ -227,6 +227,10 @@ def multiply_list(ls, times):
     return res
 
 
+def to_int(num):
+    return int(num)
+
+
 def fast_power(a, n):
     mn = a
     res = 1

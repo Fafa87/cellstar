@@ -193,7 +193,7 @@ def draw_snakes_on_axes(snakes, axes, outliers=.1):
 
         rank_ci = lambda rank: 999 * ((rank - min_rank) / rank_range) if rank <= max_rank else 999
         colors = plt.cm.jet(np.linspace(0, 1, 1000))
-        s_colors = [colors[rank_ci(s.rank)] for s in snakes]
+        s_colors = [colors[int(rank_ci(s.rank))] for s in snakes]
 
         # we want the best on top
         for snake, color in reversed(zip(snakes, s_colors)):

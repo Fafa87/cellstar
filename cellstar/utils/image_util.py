@@ -10,9 +10,18 @@ import scipy as sp
 import scipy.misc
 import scipy.ndimage
 from numpy import argwhere
+from numpy.fft import rfft2, irfft2
 from scipy.ndimage.filters import *
 
-from calc_util import extend_slices, fast_power
+try:
+    #  for older version of scipy
+    from scipy.signal.signaltools import _next_regular as next_fast_len
+except:
+    #  for 0.19 version of scipy
+    from scipy.fftpack.helper import next_fast_len
+
+
+from calc_util import extend_slices, fast_power, to_int
 
 
 def fft_convolve(in1, in2, times):
@@ -27,14 +36,13 @@ def fft_convolve(in1, in2, times):
     if times == 0:
         return in1.copy()
 
-    from scipy.signal.signaltools import _next_regular
-    from numpy.fft import rfft2, irfft2
+
     s1 = np.array(in1.shape)
     s2 = np.array(in2.shape)
     shape = s1 + (s2 - 1) * times
 
     # Speed up FFT by padding to optimal size for FFTPACK
-    fshape = [_next_regular(int(d)) for d in shape]
+    fshape = [next_fast_len(int(d)) for d in shape]
     fslice = tuple([slice(0, int(sz)) for sz in shape])
 
     resfft = fast_power(rfft2(in2, fshape), times)

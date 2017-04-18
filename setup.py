@@ -42,9 +42,9 @@ setuptools.setup(
         description="",
         include_package_data=True,
         install_requires=[
-            "matplotlib",
-            "numpy",
-            "scipy"
+            "numpy>=1.10.0",
+            "scipy>=0.14.0",
+            "Pillow>=2.5.3"
         ],
         keywords="",
         license="BSD",

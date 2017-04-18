@@ -12,3 +12,4 @@ Details
 -------
 See our website http://www.cellstar-algorithm.org/ where you can find not only matlab and plugin version of the algorithm but also a comprehensive set of example usages with ready to use pipelines for varies imagery - `Example usages document <https://drive.google.com/file/d/0B3to8FwFxuTHNnJZbXRIdTdWTFE/view>`_
 
+.. image:: http://res.cloudinary.com/hrscywv4p/image/upload/c_limit,fl_lossy,h_1440,w_720,f_auto,q_auto/v1/92051/tiles_ytp2ac.jpg

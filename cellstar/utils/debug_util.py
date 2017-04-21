@@ -157,7 +157,7 @@ def explore_cellstar(cellstar=None, seeds=[], snakes=[], images=None, image=None
             except:
                 pass
 
-            import cellstar.tests.explorer as exp
+            import utils.explorer as exp
             if image is None:
                 image = cellstar.images.image
             if images is None:

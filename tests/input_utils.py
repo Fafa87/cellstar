@@ -15,6 +15,10 @@ def turn_on_debug():
     debug_util.DEBUGING = True
 
 
+def turn_off_debug():
+    debug_util.DEBUGING = False
+
+
 def prepare_image(shape):
     img = np.zeros(shape)
     img.fill(0.5)
@@ -34,6 +38,10 @@ def draw_cell(img, center, radius):
 
 def draw_weak_cell(img, center, radius):
     draw_disc(img, center, radius + 2, .8)
+    draw_disc(img, center, radius, .45)
+
+def draw_very_weak_cell(img, center, radius):
+    draw_disc(img, center, radius + 2, .55)
     draw_disc(img, center, radius, .45)
 
 

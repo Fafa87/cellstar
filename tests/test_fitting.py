@@ -21,7 +21,6 @@ import cellstar.parameter_fitting.pf_rank_process as rank_process
 from cellstar.segmentation import Segmentation
 from input_utils import *
 
-
 class TestFitting(unittest.TestCase):
     def test_contour_fitting(self):
         process.SEARCH_LENGTH_NORMAL = 20
@@ -75,11 +74,11 @@ class TestFitting(unittest.TestCase):
         img = prepare_image((80, 80))
         gt = np.zeros((80, 80), dtype=int)
         draw_weak_cell(img, (60, 20), 12)
-        draw_disc(gt, (60, 20), 14, 1)
+        draw_disc(gt, (60, 20), 10, 1)
         draw_weak_cell(img, (40, 25), 8)
-        draw_disc(gt, (40, 25), 8, 2)
+        draw_disc(gt, (40, 25), 6, 2)
         draw_weak_cell(img, (30, 40), 9)
-        draw_disc(gt, (30, 40), 9, 3)
+        draw_disc(gt, (30, 40), 7, 3)
         img = finish_image(img)
 
         cellstar = Segmentation(11, 20)

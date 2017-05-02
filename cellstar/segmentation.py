@@ -72,6 +72,9 @@ class Segmentation(object):
         if prev_background is not None:
             self.images.background = prev_background
 
+        # Clear all temporary results
+        self.clear_lists()
+
     def set_background(self, background):
         self.images._background = background
 
@@ -230,7 +233,6 @@ class Segmentation(object):
         self.grow_snakes()
         logger.debug("filter_snakes")
         debug_util.draw_snakes(self.images.image, self.snakes + self.new_snakes, it=step)
-        debug_util.save_snake_properties(self.snakes + self.new_snakes, self.parameters, it=step)
         self.filter_snakes()
         logger.debug("done")
 

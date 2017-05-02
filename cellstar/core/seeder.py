@@ -222,9 +222,6 @@ class Seeder(object):
                 )
                 seeds += new_seeds
 
-        # TODO: filter seeds using foreground mask ?
-        # seeds = [seed for seed in seeds if self.images.foreground_mask[seed.y, seed.x]]
-
         seeds = self.filter_seeds(self.images.image.shape, seeds, all_seeds)
 
         return seeds

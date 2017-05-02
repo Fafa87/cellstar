@@ -215,13 +215,6 @@ def draw_snakes(image, snakes, outliers=.1, it=0):
         fig.clf()
         plt.close(fig)
 
-def save_snake_properties(snakes, params, it=0):
-    if DEBUGING and SNAKE_PROPERTIES and len(snakes) > 1:
-        prepare_debug_folder()
-
-        file_path = os.path.join(debug_image_path, "snakes_rainbow_" + str(it) + ".csv")
-        # TODO
-
 try:
     import line_profiler
     import memory_profiler

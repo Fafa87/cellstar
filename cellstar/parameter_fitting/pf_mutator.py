@@ -44,7 +44,7 @@ def create_mutant_from_change(org_snake, polar_transform, boundary_change):
     mutant_snake.polar_coordinate_boundary = new_boundary
     mutant_snake.points = [Point(x, y) for x, y in zip(px, py)]
 
-    # TODO need to update self.final_edgepoints to calculate properties (for now we ignore this property)
+    # need to update self.final_edgepoints to calculate properties (for now we ignore this property)
     mutant_snake.evaluate(polar_transform)
 
     return mutant_snake

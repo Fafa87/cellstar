@@ -5,7 +5,7 @@ Date: 2013-2016
 Website: http://cellstar-algorithm.org/
 """
 
-from contrib.cell_star.core.point import Point
+from cellstar.core.point import Point
 
 
 class Seed(Point):

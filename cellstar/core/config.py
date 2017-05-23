@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Adam Kaczmarek, Filip Mróz'
+"""
+Config is a storage for default CellStar configuration.
+Date: 2013-2016
+Website: http://cellstar-algorithm.org/
+"""
 
 
 def default_config():
@@ -43,18 +47,17 @@ def default_config():
             'steps': 2,
             'maxArea': 2.83,
             'stars': {
-                'cumBrightnessWeight': 241.319005997,
+                'cumBrightnessWeight': 304.45,
                 'maxSize': 1.67,
-                'gradientWeight': -92.0672006787,
-                'sizeWeight': [1071.7792126066715],
-                'brightnessWeight': 487.56705379,
+                'gradientWeight': 15.482,
+                'sizeWeight': [189.4082],
+                'brightnessWeight': 0.0442,
                 'step': 0.0335,
                 'points': 28,
                 'borderThickness': 0.1,
                 'unstick': 0.3,
                 'backgroundWeight': 0.0,
-                'smoothness': 9.59491685094,
-                'contentWeight': 0.0,
+                'smoothness': 7.0,
                 'gradientBlur': 0.0
             },
             'minAvgInnerDarkness': 0.1,

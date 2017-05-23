@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Adam Kaczmarek, Filip Mróz'
+"""
+Calculation package contains a number of functions used in contour grow and evaluation.
+Date: 2013-2016
+Website: http://cellstar-algorithm.org/
+"""
 
-# External imports
 import math
 
 import numpy as np
-from matplotlib.path import Path
+import scipy.ndimage as sp_image
 
 from index import Index
 
@@ -14,179 +17,135 @@ def euclidean_norm((x1, y1), (x2, y2)):
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
 
-def interpolate(final_edgepoints, points_number, xmins3):
-    # Interpolacja konturu, na odrzucone punkty
-    # Lista indeksów zatwierdzonych punktów konturu
-    cumlengths = np.where(final_edgepoints)[0]
+def interpolate_radiuses(values_mask, length, values):
+    """
+    Fill values with linear interpolation using values_mask values.
+    @type values_mask: np.ndarray
+    @param values_mask: mask of existing values
+    @type values: np.ndarray
+    @type length: int
+    """
+    cumlengths = np.where(values_mask)[0]
     if len(cumlengths) > 0:
-        # Dodanie na końcu listy indeksu pierwszego punktu zwiększonego o liczbę
-        # punktów konturu, dla obliczenia długości przedziału interpolacji
-        cumlengths_loop = np.append(cumlengths, cumlengths[0] + int(points_number))
+        cumlengths_loop = np.append(cumlengths, cumlengths[0] + int(length))
         for i in range(len(cumlengths)):
-            # Indeks bieżącego punktu konturu
-            # current = cumlengths[i]
+            # Find left and right boundary in existing values.
             left_interval_boundary = cumlengths_loop[i]
-            # Długość przedziału interpolacji (ilość odrzuconych punktów konturu do najbliższego zatwierdzonego)
-            # mlength = cumlengths_loop[i + 1] - current - 1
+            right_interval_boundary = cumlengths_loop[i + 1] % length
+
+            # Length of the interpolated interval.
             interval_length = cumlengths_loop[i + 1] - left_interval_boundary - 1
-            # Indeks końca przedziału interpolacji (ostatniego interpolowanego punktu)
-            # jend = (current + mlength + 1) % points_number
-            right_interval_boundary = cumlengths_loop[i + 1] % points_number
 
-            # Dla każdego punktu w przedziale interpolacji
-            for k in range(left_interval_boundary + 1, left_interval_boundary + interval_length + 1):
-                # Indeks interpolowanego punktu
-                interpolated = k % points_number
-                # Oblicz nową interpolowaną wartość
-                new_val = round(xmins3[left_interval_boundary] + (
-                    xmins3[right_interval_boundary] - xmins3[left_interval_boundary]) * (k - left_interval_boundary) / (
-                                    interval_length + 1))
-                # Zwróć minimum jako wynik interpolacji - interpolacja nie może oddalić konturu od środka komórki
-                xmins3[interpolated] = min(xmins3[interpolated], new_val)
+            # Interpolate for every point in the interval.
+            for k in range(1, interval_length + 1):
+                interpolated = (left_interval_boundary + k) % length
+
+                new_val = round(values[left_interval_boundary] +
+                                (values[right_interval_boundary] - values[left_interval_boundary]) *
+                                k / (interval_length + 1.0))  # (interval_length + 1.0)
+
+                values[interpolated] = new_val  # min(values[interpolated], new_val)
 
 
-def loop_connected_components(v):
+def loop_connected_components(mask):
     """
-    @param v: numpy.array (1-dim)
+    @type mask: np.ndarray
+    @rtype (np.ndarray, np.ndarray, np.ndarray)
     """
 
-    c = []
+    c = np.array([])
     init = np.array([])
-    fin = []
-    if v.sum() > 0:
-        c.append(0)
-        fin.append(1)
-        current = 0
-        for i in xrange(0, v.shape[0]):
-            if v[i]:
-                c[current] += 1
-                fin[current] = i
-            else:
-                if c[current] is not 0:
-                    current += 1
-                    c.append(0)
-                    fin.append(i)
+    fin = np.array([])
 
-        c = np.array(c)
-        fin = np.array(fin)
+    if mask.sum() > 0:
+        labeled = sp_image.label(mask)[0]
+        components = sp_image.measurements.find_objects(labeled)
+        c_fin = [(s[0].stop - s[0].start, s[0].stop - 1) for s in components]
+        if len(c_fin) > 1 and mask[0] and mask[-1]:
+            c_fin[0] = c_fin[0][0] + c_fin[-1][0], c_fin[0][1]
+            c_fin = c_fin[0:-1]
 
-        if c.shape[0] > 1:
-            if c[-1] == 0:
-                c = c[0:-1]
-                fin = fin[0:-1]
-
-            if v[0] and v[-1]:
-                c[0] = c[0] + c[-1]
-                c = c[0:-1]
-                fin = fin[0:-1]
-
-        init = (fin - c) % v.shape[0] + 1
-    return np.array(c), init, fin
+        c, fin = zip(*c_fin)
+        c = np.array(c, dtype=int)
+        fin = np.array(fin, dtype=int)
+        init = (fin - c + 1) % mask.shape[0]
+    return c, init, fin
 
 
 def unstick_contour(edgepoints, unstick_coeff):
-            """
-            Removes edgepoints near previously discarded points.
-            @type edgepoints: list of boolean
-            @param edgepoints: current edgepoint list
-            @type unstick_coeff: float
-            @param unstick_coeff
-            @return: filtered edgepoints
-            """
-            (n, init, end) = loop_connected_components(np.logical_not(edgepoints))
-            filtered = np.copy(edgepoints)
-            n_edgepoint = len(edgepoints)
-            for size, s, e in zip(n, init, end):
-                for j in range(1,int(size * unstick_coeff + 0.5) + 1):
-                    filtered[(e+j) % n_edgepoint] = 0
-                    filtered[(s-j) % n_edgepoint] = 0
-            return filtered
+    """
+    Removes edgepoints near previously discarded points.
+    @type edgepoints: list[bool]
+    @param edgepoints: current edgepoint list
+    @type unstick_coeff: float
+    @param unstick_coeff
+    @return: filtered edgepoints
+    """
+    (n, init, end) = loop_connected_components(np.logical_not(edgepoints))
+    filtered = np.copy(edgepoints)
+    n_edgepoint = len(edgepoints)
+    for size, s, e in zip(n, init, end):
+        for j in range(1, int(size * unstick_coeff + 0.5) + 1):
+            filtered[(e + j) % n_edgepoint] = 0
+            filtered[(s - j) % n_edgepoint] = 0
+    return filtered
 
 
 def sub2ind(dim, (x, y)):
     return x + y * dim
 
 
-def index(px, py):
-    return np.column_stack((py.flat, px.flat)).astype(np.int64)
-
 def get_gradient(im, index, border_thickness_steps):
     """
     Fun. calc. radial gradient including thickness of cell edges
     @param im: image (for which grad. will be calc.)
-    @param index: indices of pixes sorted by polar coords. (alpha, radius) 
-    @param border_thickness_steps: number of steps to cop. grad. - depands on cell border thickness
+    @param index: indices of pixes sorted by polar coordinates (alpha, radius)
+    @param border_thickness_steps: number of steps to cop. grad. - depends on cell border thickness
     @return: gradient matrix for cell
     """
     # index of axis used to find max grad.
-    # PL: Indeks pomocniczy osi służący do wyznaczenia maksymalnego gradientu
     max_gradient_along_axis = 2
+
     # preparing the image limits (called subimage) for which grad. will be computed
-    # PL: Wymiary wycinka obrazu, dla którego będzie obliczany gradient
-    radius_lengths, angles = index.shape[0], index.shape[1]
+    radius_lengths, angles = index.shape[:2]
+
     # matrix init
     # for each single step for each border thick. separated grad. is being computed
-    # at the end the max. grad values are returned (for all steps and thick.)
-    # PL: Inicjacja macierzy dla obliczania gradientów
-    # PL: Dla każdego pojedynczego kroku dla zadanej grubości krawędzi komórki obliczany jest osobny gradient
-    # PL: Następnie zwracane są maksymalne wartości gradientu w danym punkcie dla wszystkich kroków grubości krawędzi
+    # at the end the max. grad values are returned (for all steps of thickness)
+    border_thickness_steps = int(border_thickness_steps)
     gradients_for_steps = np.zeros((radius_lengths, angles, border_thickness_steps), dtype=np.float64)
-    # PL: Dla każdego kroku wynikającego z grubości krawędzi komórki:
-    # PL: Najmniejszy krok ma rozmiar 1, największy ma rozmiar: ${border_thickness_steps}
-    for border_thickness_step in range(1, int(border_thickness_steps) + 1):
 
+    # for every step of thickness:
+    for border_thickness_step in range(1, int(border_thickness_steps) + 1):
         # find beg. and end indices of input matrix for which the gradient will be computed
-        # PL: Wyznacz początek i koniec wycinka macierzy, dla którego będzie wyliczany gradient
         matrix_end = radius_lengths - border_thickness_step
         matrix_start = border_thickness_step
 
         # find beg. and end indices of pix. for which the gradient will be computed
-        # PL: Wyznacz początek i koniec wycinka indeksu pikseli, dla którego będzie wyliczany gradient
         starting_index = index[:matrix_end, :]
         ending_index = index[matrix_start:, :]
 
-        # find the spot in matrix where comp. gradient will go
-        # PL: Wyznacz początek i koniec wycinka macierzy wynikowej, do którego będzie zapisany obliczony gradient
+        # find internal in matrix where computed gradient will go
         intersect_start = int(math.ceil(border_thickness_step / 2.0))
         intersect_end = int(intersect_start + matrix_end)
 
-        # comp. current gradient for selected (sub)image 
-        # PL: Wylicz bieżącą wartość gradientu dla wyznaczonego wycinka obrazu
-        try:
-            current_step_gradient = im[Index.to_numpy(ending_index)] - im[Index.to_numpy(starting_index)]
-        except Exception:
-            print border_thickness_step
-            print radius_lengths
-            print matrix_start
-            print matrix_end
-            print ending_index
-            print starting_index
-
-            raise Exception
-
+        # comp. current gradient for selected (sub)image
+        current_step_gradient = im[Index.to_numpy(ending_index)] - im[Index.to_numpy(starting_index)]
         current_step_gradient /= np.sqrt(border_thickness_step)
-        # Zapisz gradient do wyznaczonego wycinka macierzy wyników
-        gradients_for_steps[intersect_start:intersect_end, :, border_thickness_step-1] = current_step_gradient
+
+        # save gradient to previously determined place in results matrix
+        gradients_for_steps[intersect_start:intersect_end, :, border_thickness_step - 1] = current_step_gradient
 
     return gradients_for_steps.max(axis=max_gradient_along_axis)
 
 
-def get_polygon_path(polygon_x, polygon_y):
-    vertices = zip(list(polygon_x) + [polygon_x[0]], list(polygon_y) + [polygon_y[0]])
-    codes = [Path.MOVETO] + [Path.LINETO] * (len(vertices) - 2) + [Path.CLOSEPOLY]
-    p = Path(vertices, codes)
-    return p
+def extend_slices(my_slices, extension):
+    def extend_slice(my_slice, extend):
+        max_len = 100000
+        ind = (max(0, my_slice.indices(max_len)[0] - extend), my_slice.indices(max_len)[1] + extend)
+        return slice(*ind)
 
-
-def get_in_polygon(x1, x2, y1, y2, path):
-    x, y = np.meshgrid(np.arange(x1, x2), np.arange(y1, y2))
-    x, y = x.flatten(), y.flatten()
-    pts = np.vstack((x, y)).T
-
-    # Find points that belong to snake in minimal rectangle
-    grid = path.contains_points(pts)
-    grid = grid.reshape(y2 - y1, x2 - x1)
-    return grid
+    return extend_slice(my_slices[0], extension), extend_slice(my_slices[1], extension)
 
 
 def inslice_point(point_yx_in_slice, slices):
@@ -221,20 +180,35 @@ def polar_to_cartesian(polar_coordinate_boundary, origin_x, origin_y, polar_tran
     return px, py
 
 
+def mask_with_pil(ys, xs, yslice, xslice):
+    from PIL import Image
+    rxs = np.round(xs) - xslice[0]
+    rys = np.round(ys) - yslice[0]
+
+    lx = xslice[1] - xslice[0]
+    ly = yslice[1] - yslice[0]
+    rxys = zip(rxs, rys)
+
+    img = Image.new('L', (lx, ly), 0)
+    draw = Image.core.draw(img.im, 0)
+    ink = draw.draw_ink(1, "white")
+    draw.draw_polygon(rxys, ink, 1)
+    draw.draw_polygon(rxys, ink, 0)
+    return np.array(img) != 0
+
+
 def star_in_polygon((max_y, max_x), polar_coordinate_boundary, seed_x, seed_y, polar_transform):
     polygon_x, polygon_y = polar_to_cartesian(polar_coordinate_boundary, seed_x, seed_y, polar_transform)
 
-    x1 = int(max(0, math.floor(min(polygon_x))))
-    x2 = int(min(max_x, math.ceil(max(polygon_x)) + 1))
-    y1 = int(max(0, math.floor(min(polygon_y))))
-    y2 = int(min(max_y, math.ceil(max(polygon_y)) + 1))
+    polygon_x_bounded = np.maximum(0, np.minimum(max_x - 1, polygon_x))
+    polygon_y_bounded = np.maximum(0, np.minimum(max_y - 1, polygon_y))
 
-    x1 = min(x1, max_x)
-    y1 = min(y1, max_y)
-    x2 = max(0, x2)
-    y2 = max(0, y2)
+    x1 = int(math.floor(np.min(polygon_x_bounded)))
+    x2 = int(math.ceil(np.max(polygon_x_bounded)) + 1)
+    y1 = int(math.floor(np.min(polygon_y_bounded)))
+    y2 = int(math.ceil(np.max(polygon_y_bounded)) + 1)
 
-    small_boolean_mask = get_in_polygon(x1, x2, y1, y2, get_polygon_path(polygon_x, polygon_y))
+    small_boolean_mask = mask_with_pil(polygon_y_bounded, polygon_x_bounded, (y1, y2), (x1, x2))
 
     boolean_mask = np.zeros((max_y, max_x), dtype=bool)
     boolean_mask[y1:y2, x1:x2] = small_boolean_mask
@@ -242,3 +216,28 @@ def star_in_polygon((max_y, max_x), polar_coordinate_boundary, seed_x, seed_y, p
     yx = [y1, x1]
 
     return boolean_mask, small_boolean_mask, yx
+
+
+def multiply_list(ls, times):
+    list_length = len(ls)
+    integer_times = int(times)
+    fraction_elements = int((times - int(times)) * list_length)
+    res = ls * integer_times
+    res += ls[:fraction_elements]
+    return res
+
+
+def to_int(num):
+    return int(num)
+
+
+def fast_power(a, n):
+    mn = a
+    res = 1
+    n = int(n)
+    while n > 0:
+        if (n % 2 == 1):
+            res *= mn
+        mn = mn * mn
+        n /= 2
+    return res

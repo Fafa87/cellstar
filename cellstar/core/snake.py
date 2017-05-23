@@ -9,10 +9,10 @@ import math
 
 import numpy as np
 
-from contrib.cell_star.core.point import Point
-from contrib.cell_star.utils import calc_util, image_util
-from contrib.cell_star.utils.index import Index
-from contrib.cell_star.utils.python_util import *
+from cellstar.core.point import Point
+from cellstar.utils import calc_util, image_util
+from cellstar.utils.debug_util import *
+from cellstar.utils.index import Index
 
 
 class Snake(object):
@@ -23,6 +23,7 @@ class Snake(object):
     @ivar rank: ranking of the contour (the smaller the better)
     """
     epsilon = 1e-10
+    max_rank = 10000
 
     @property
     def xs(self):
@@ -84,11 +85,10 @@ class Snake(object):
         self.free_border_entropy = 0.0
         self.properties_vector_cached = {}
 
-    @speed_profile
-    def star_grow(self, size_weight, polar_transform):
+    def grow(self, size_weight, polar_transform):
         """
         Grow the snake from seed.
-        @type polar_transform: contrib.cell_star.core.vectorized.polar_transform.PolarTransform
+        @type polar_transform: cellstar.core.vectorized.polar_transform.PolarTransform
         @type size_weight: float
         """
 
@@ -106,7 +106,6 @@ class Snake(object):
         smoothness = self.parameters["segmentation"]["stars"]["smoothness"]
         gradient_weight = self.parameters["segmentation"]["stars"]["gradientWeight"]
         brightness_weight = self.parameters["segmentation"]["stars"]["brightnessWeight"]
-        content_weight = self.parameters["segmentation"]["stars"]["contentWeight"] / avg_cell_diameter
         size_weight = float(size_weight) / avg_cell_diameter
         cum_brightness_weight = self.parameters["segmentation"]["stars"]["cumBrightnessWeight"] / avg_cell_diameter
         background_weight = self.parameters["segmentation"]["stars"]["backgroundWeight"] / avg_cell_diameter
@@ -115,7 +114,6 @@ class Snake(object):
 
         im = self.images.image_back_difference_blurred
         imb = self.images.brighter
-        imc = self.images.darker
         imfg = self.images.foreground_mask
 
         steps = polar_transform.steps
@@ -140,7 +138,7 @@ class Snake(object):
         # for angle:
         #   for radius:
 
-        index = calc_util.index(px.round(), py.round()).reshape(
+        index = Index.create(px.round(), py.round()).reshape(
             (polar_transform.x.shape[0], polar_transform.x.shape[1], 2))
 
         #
@@ -150,7 +148,6 @@ class Snake(object):
 
         numpy_index = Index.to_numpy(index)
         pre_f = (cum_brightness_weight * imb[numpy_index] \
-                 - content_weight * imc[numpy_index] \
                  + background_weight * (1 - imfg[numpy_index])) * step
         f = np.cumsum(pre_f, axis=0)
 
@@ -186,13 +183,14 @@ class Snake(object):
             calc_util.unstick_contour(self.original_edgepoints, unstick)
 
         # Interpolate points where no reliable points had been found.
-        calc_util.interpolate(self.final_edgepoints, points_number, smoothed_radius)
+        calc_util.interpolate_radiuses(self.final_edgepoints, points_number, smoothed_radius)
 
         #
         # Create contour points list
         #
 
-        final_radius = np.minimum(np.maximum(np.round(smoothed_radius + 1), 1), max_r - 1)
+        final_radius = np.minimum(np.maximum(smoothed_radius, 1), max_r - 1)
+        #final_radius = np.minimum(np.maximum(np.round(smoothed_radius + 1), 1), max_r - 1)
 
         px = self.seed.x + step * final_radius * np.cos(t.T)
         py = self.seed.y + step * final_radius * np.sin(t.T)
@@ -213,67 +211,52 @@ class Snake(object):
         @rtype (np.ndarray, np.ndarray)
         @return (smoothed_radius, used_radius_bounds)
         """
-        points_order = range(0, points_number)
         min_angle = radius.argmin()
         istart = min_angle
 
         xmins2 = np.copy(radius)
         xmaxs = np.copy(radius)
 
-        current_iteration = 0
-        ok_points = 0
         changed = True
 
-        while changed:
-            changed = False
-
-            # vertices_order = points_order[min_angle:] + points_order[:min_angle]
-            fixed = 0
-            while ok_points < points_number:
-                if fixed >= points_number and ok_points != 0:
-                    current_iteration += points_number - ok_points
-                    ok_points = points_number
-                    break
-
-                current = (istart + current_iteration) % points_number
-                previous = (current - 1) % points_number
+        def cut_rotate(start, step):
+            last_ok = False
+            iteration = 0
+            any_cut = False
+            while not (iteration >= points_number and last_ok):
+                current = (start + iteration * step) % points_number
+                previous = (current - 1 * step) % points_number
 
                 if xmins2[current] - xmins2[previous] > max_diff[xmins2[previous]]:
                     xmaxs[current] = xmins2[previous] + max_diff[xmins2[previous]]
                     f_tot_slice = f_tot[current, :xmaxs[current] + 1]
                     xmins2[current] = f_tot_slice.argmin()
-                    ok_points = 0
-                    changed = True
+                    if step < 0:
+                        xmins2[current] = max(xmins2[current], xmins2[previous] - max_diff[xmins2[previous]])
+                    last_ok = False
+                    any_cut = True
                 else:
-                    ok_points += 1
+                    last_ok = True
 
-                fixed += 1
-                current_iteration += 1
+                iteration += 1
+            return (start + iteration * step) % points_number, any_cut
 
-            while ok_points > 1:
-                current = (istart + current_iteration) % points_number
-                previous = (current + 1) % points_number
+        current_position = istart
+        while changed:
+            changed = False
 
-                if xmins2[current] - xmins2[previous] > max_diff[xmins2[previous]]:
-                    xmaxs[current] = xmins2[previous] + max_diff[xmins2[previous]]
-                    f_tot_slice = f_tot[current, :xmaxs[current] + 1]
-                    xmins2[current] = max(f_tot_slice.argmin(), xmins2[previous] - max_diff[xmins2[previous]])
-                    ok_points = 0
-                    changed = True
-                else:
-                    ok_points -= 1
+            current_position, any_cut = cut_rotate(current_position, 1)
+            changed = changed or any_cut
 
-                current_iteration += 1
-
-            current_iteration += 1
+            current_position, any_cut = cut_rotate(current_position, -1)
+            changed = changed or any_cut
 
         return xmins2, xmaxs
 
-    @speed_profile
-    def calculate_properties_vec(self, polar_transform):
+    def evaluate(self, polar_transform):
         """
         Analyse contour and calculate all it properties and ranking.
-        @type polar_transform: contrib.cell_star.core.vectorized.polar_transform.PolarTransform
+        @type polar_transform: cellstar.core.vectorized.polar_transform.PolarTransform
         """
 
         # Potentially prevent unnecessary calculations
@@ -365,7 +348,11 @@ class Snake(object):
         self.max_contiguous_free_border = fb.max() if fb.size > 0 else 0
 
         self.free_border_entropy = fb_entropy
-        self.rank = self.star_rank(ranking_params, avg_cell_diameter)
+
+        if all(self.polar_coordinate_boundary <= 1):  # minimal step is 1 (see snake_grow)
+            self.rank = Snake.max_rank
+        else:
+            self.rank = self.star_rank(ranking_params, avg_cell_diameter)
 
     def star_rank(self, ranking_params, avg_cell_diameter):
         return np.dot(self.ranking_parameters_vector(ranking_params), self.properties_vector(avg_cell_diameter))

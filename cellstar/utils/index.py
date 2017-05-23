@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Adam Kaczmarek, Filip Mróz'
+"""
+Index is a convenient structure for processing calculate all angle x radius point in one numpy operation.
+Date: 2013-2016
+Website: http://cellstar-algorithm.org/
+"""
 
 import numpy as np
 
 
 class Index(object):
-
-    @staticmethod
-    def _decode_single_index(single_index, dim):
-        px, py = divmod(single_index - 1, dim)
-        return np.array([int(py), int(px)])
+    @classmethod
+    def create(cls, px, py):
+        return np.column_stack((py.flat, px.flat)).astype(np.int64)
 
     @staticmethod
     def to_numpy(index):
@@ -19,6 +21,3 @@ class Index(object):
             return index[:, :, 0], index[:, :, 1]
         else:
             return index
-
-
-

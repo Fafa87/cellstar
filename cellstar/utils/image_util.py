@@ -1,38 +1,56 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Adam Kaczmarek, Filip Mróz'
+"""
+Image util module contains additional methods for easy image manipulations.
+Date: 2013-2016
+Website: http://cellstar-algorithm.org/
+"""
 
-# External imports
-import os
-from os import makedirs
-from os.path import  exists
-
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 import scipy.misc
 import scipy.ndimage
 from numpy import argwhere
+from numpy.fft import rfft2, irfft2
 from scipy.ndimage.filters import *
 
-debug_image_path = "debug"
-
-SHOW = False
-SILENCE = False
-
-def prepare_debug_folder():
-    if not exists(debug_image_path):
-        makedirs(debug_image_path)
-
-def convolve2d(img, kernel, mode='same'):
-    return convolve(img, kernel)
+try:
+    #  for older version of scipy
+    from scipy.signal.signaltools import _next_regular as next_fast_len
+except:
+    #  for 0.19 version of scipy
+    from scipy.fftpack.helper import next_fast_len
 
 
-def extend_slices(my_slices, extension):
-    def extend_slice(my_slice, extend):
-        ind = (max(0, my_slice.indices(100000)[0] - extend), my_slice.indices(100000)[1] + extend)
-        return slice(*ind)
+from calc_util import extend_slices, fast_power, to_int
 
-    return extend_slice(my_slices[0], extension), extend_slice(my_slices[1], extension)
+
+def fft_convolve(in1, in2, times):
+    def _centered(arr, newsize):
+        # Return the center newsize portion of the array.
+        currsize = np.array(arr.shape)
+        startind = (currsize - newsize) // 2
+        endind = startind + newsize
+        myslice = [slice(startind[k], endind[k]) for k in range(len(endind))]
+        return arr[tuple(myslice)]
+
+    if times == 0:
+        return in1.copy()
+
+
+    s1 = np.array(in1.shape)
+    s2 = np.array(in2.shape)
+    shape = s1 + (s2 - 1) * times
+
+    # Speed up FFT by padding to optimal size for FFTPACK
+    fshape = [next_fast_len(int(d)) for d in shape]
+    fslice = tuple([slice(0, int(sz)) for sz in shape])
+
+    resfft = fast_power(rfft2(in2, fshape), times)
+    resfft = resfft * rfft2(in1, fshape)
+    ret = irfft2(resfft, fshape)[fslice].copy()
+    ret = ret.real
+
+    return _centered(ret, s1)
 
 
 def get_bounding_box(image_mask):
@@ -66,7 +84,7 @@ def image_dilate(image, radius):
         return image
     ys, xs = box
     lp, hp = contain_pixel(image.shape, (ys[0] - radius, xs[0] - radius)), \
-        contain_pixel(image.shape, (ys[1] + radius, xs[1] + radius))
+             contain_pixel(image.shape, (ys[1] + radius, xs[1] + radius))
     ys, xs = (lp[0], hp[0]), (lp[1], hp[1])
     morphology_element = get_circle_kernel(radius)
     dilated_part = sp.ndimage.morphology.binary_dilation(image[ys[0]:ys[1], xs[0]:xs[1]], morphology_element)
@@ -100,7 +118,7 @@ def fill_foreground_holes(mask, kernel_size, minimal_hole_size, min_cluster_area
 def mark_small_areas(mask, max_hole_size, result_mask):
     components, num_components = sp.ndimage.label(mask, np.ones((3, 3)))
     slices = sp.ndimage.find_objects(components)
-    for label, slice in zip(range(1, num_components + 1),slices):
+    for label, slice in zip(range(1, num_components + 1), slices):
         components_slice = components[slice] == label
         if np.count_nonzero(components_slice) < max_hole_size:
             result_mask[slice][components_slice] = True
@@ -134,7 +152,7 @@ def fill_holes(mask, kernel_size, minimal_hole_size):
         components, num_components = sp.ndimage.label(np.logical_not(new_mask), np.ones((3, 3)))
         slices = sp.ndimage.find_objects(components)
         for label, slice in zip(range(1, num_components + 1), slices):
-            slice = extend_slices(slice,kernel_size * 2)
+            slice = extend_slices(slice, to_int(kernel_size * 2))
             components_slice = components[slice] == label
             # filter small components
             if np.count_nonzero(components_slice) < minimal_hole_size:
@@ -164,25 +182,13 @@ def fill_holes(mask, kernel_size, minimal_hole_size):
     return mask
 
 
-def draw_seeds(seeds, background, title="some_source"):
-    if not SILENCE:
-        prepare_debug_folder()
-        fig = plt.figure("draw_seeds")
-        fig.frameon = False
-        plt.imshow(background, cmap=plt.cm.gray)
-        plt.plot([s.x for s in seeds], [s.y for s in seeds], 'bo', markersize=3)
-        plt.savefig(os.path.join(debug_image_path, "seeds_"+title+".png"), pad_inches=0.0)
-        fig.clf()
-        plt.close(fig)
-
-
-def contain_pixel(shape, pixel):
+def contain_pixel(shape, pixelYX):
     """
     Trims pixel to given dimentions, converts pixel position to int
     @param shape: size (height, width) exclusive
     @param pixel: pixel to push inside shape
     """
-    (py, px) = pixel
+    (py, px) = pixelYX
     (py, px) = ((np.minimum(np.maximum(py + 0.5, 0), shape[0] - 1)).astype(int),
                 (np.minimum(np.maximum(px + 0.5, 0), shape[1] - 1)).astype(int))
     return py, px
@@ -191,24 +197,22 @@ def contain_pixel(shape, pixel):
 def find_maxima(image):
     """
     Finds local maxima in given image
-    @param image: image from which maxima will be found
+    @param image: image for which maxima will be found
     """
     height = image.shape[0]
     width = image.shape[1]
 
-    right = np.zeros(image.shape)
-    left = np.zeros(image.shape)
-    up = np.zeros(image.shape)
-    down = np.zeros(image.shape)
+    right = np.zeros(image.shape, dtype=bool)
+    left = np.zeros(image.shape, dtype=bool)
+    up = np.zeros(image.shape, dtype=bool)
+    down = np.zeros(image.shape, dtype=bool)
 
-    epsilon = 0.00  #0001
+    right[:, 0:width - 1] = image[:, 0:width - 1] > image[:, 1:width]
+    left[:, 1:width] = image[:, 1:width] > image[:, 0:width - 1]
+    up[0:height - 1, :] = image[0:height - 1, :] > image[1:height, :]
+    down[1:height, :] = image[1:height, :] > image[0:height - 1, :]
 
-    right[0:height, 0:width - 1] = np.array(image[:, 0:width - 1] - image[:, 1:width] > epsilon)
-    left[0:height, 1:width] = np.array(image[:, 1:width] - image[:, 0:width - 1] > epsilon)
-    up[0:height - 1, 0:width] = np.array(image[0:height - 1, :] - image[1:height, :] > epsilon)
-    down[1:height, 0:width] = np.array(image[1:height, :] - image[0:height - 1, :] > epsilon)
-
-    return right * left * up * down
+    return right & left & up & down
 
 
 def exclude_segments(image, segments, val):
@@ -225,11 +229,14 @@ def exclude_segments(image, segments, val):
 
     return image_segments_valued
 
+
 def image_median_filter(image, size):
     if size < 1:
         return image
-
+    
+    size = to_int(size)
     return median_filter(image, (size, size))
+
 
 def image_blur(image, times):
     """
@@ -238,15 +245,17 @@ def image_blur(image, times):
     @param times: specifies how many times blurring will be performed
     """
     kernel = np.array([[2, 3, 2], [3, 12, 3], [2, 3, 2]]) / 32.0
-    blurred = convolve2d(image, kernel, 'same')
 
-    for _ in xrange(int(times) - 1):
-        blurred = convolve2d(blurred, kernel, 'same')
+    if times >= 8:
+        return fft_convolve(image, kernel, times)
+    else:
+        blurred = convolve(image, kernel)
+        for _ in xrange(int(times) - 1):
+            blurred = convolve(blurred, kernel)
+        return blurred
 
-    return blurred
 
-
-def image_smooth(image, radius):
+def image_smooth(image, radius, fft_use=True):
     """
     Performs image blur with circular kernel.
     @param image: image to be blurred (assumed as numpy.array of values from 0 to 1)
@@ -258,7 +267,14 @@ def image_smooth(image, radius):
     kernel = get_circle_kernel(radius).astype(float)
     kernel /= np.sum(kernel)
     image = np.array(image, dtype=float)
-    return convolve2d(image, kernel, 'same')
+
+    if radius >= 8 and fft_use:
+        image_2 = np.pad(image, int(radius), mode='reflect')
+        res = fft_convolve(image_2, kernel, 1)
+        radius_round = to_int(radius)
+        return res[radius_round:-radius_round, radius_round:-radius_round]
+    else:
+        return convolve(image, kernel, mode='reflect', cval=0.0)
 
 
 def image_normalize(image):
@@ -279,84 +295,11 @@ def image_normalize(image):
     return np.minimum(np.maximum(image_normalized, 0), 1)
 
 
-def image_save(image, title):
-    """
-    Displays image with title using matplotlib.pyplot
-    @param image:
-    @param title:
-    """
-
-    if not SILENCE:
-        prepare_debug_folder()
-        sp.misc.imsave(os.path.join(debug_image_path, title + '.png'), image)
-
-
-def image_show(image, title):
-    """
-    Displays image with title using matplotlib.pyplot
-    @param image:
-    @param title:
-    """
-    if not SILENCE and SHOW:
-        prepare_debug_folder()
-        fig = plt.figure(title)
-        plt.imshow(image, cmap=plt.cm.gray, interpolation='none')
-        plt.show()
-        fig.clf()
-        plt.close(fig)
-
-
-def draw_overlay(image, x, y):
-    if not SILENCE and SHOW:
-        prepare_debug_folder()
-        fig = plt.figure()
-        plt.imshow(image, cmap=plt.cm.gray, interpolation='none')
-        plt.plot(x, y)
-        plt.show()
-        fig.clf()
-        plt.close(fig)
-
-
-def draw_snakes(image, snakes, outliers=.1, it=0):
-    if not SILENCE and len(snakes) > 1:
-        prepare_debug_folder()
-        snakes = sorted(snakes, key=lambda ss: ss.rank)
-        fig = plt.figure("draw_snakes")
-        plt.imshow(image, cmap=plt.cm.gray, interpolation='none')
-
-        snakes_tc = snakes[:int(len(snakes) * (1 - outliers))]
-
-        max_rank = snakes_tc[-1].rank
-        min_rank = snakes_tc[0].rank
-        rank_range = max_rank - min_rank
-        if rank_range == 0:  # for example there is one snake
-            rank_range = max_rank
-
-        rank_ci = lambda rank: 999 * ((rank - min_rank) / rank_range) if rank <= max_rank else 999
-        colors = plt.cm.jet(np.linspace(0, 1, 1000))
-        s_colors = [colors[rank_ci(s.rank)] for s in snakes]
-
-        for snake, color in zip(snakes, s_colors):
-            plt.plot(snake.xs, snake.ys, c=color, linewidth=4.0)
-
-        plt.savefig(os.path.join(debug_image_path, "snakes_rainbow_"+str(it)+".png"), pad_inches=0.0)
-        if SHOW:
-            plt.show()
-
-        fig.clf()
-        plt.close(fig)
-
-
-def tiff16_to_float(image):
-    image = np.array(image, dtype=float)
-    return (image - image.min()) / image.max()
-
-
 def set_image_border(image, val):
     """
     Sets pixel values at image borders to given value
     @param image: image that borders will be set to given value
-    @param val: value to be set
+    @param val: value to be s et
     """
     image[0, :] = val
     image[:, 0] = val
@@ -366,50 +309,15 @@ def set_image_border(image, val):
     return image
 
 
-def paths(test_path):
-    return os.path.join(test_path, 'test_reference'), os.path.join(test_path, 'frames'), os.path.join(test_path, 'background')
-
-
-def frame_exists(frames_path, frame):
-    return os.path.exists(frames_path + frame)
-
-
-def load_ref_image(test_reference_path, frame, name):
-    return load_image(test_reference_path + frame + "/" + name + ".tif")
-
-
-def load_frame(frames_path, filename):
-    return load_image(frames_path + filename)
-
-
-def load_frame_background(background_path, filename):
-    try:
-        image = load_image(background_path + filename)
-        if image is None:
-            return None
-
-        return image
-    except IOError:
-        return None
-
-
 def load_image(filename, scaling=True):
     if filename == '':
         return None
     image = scipy.misc.imread(filename)
     if image.max() > 1 and scaling:
-        image = np.array(image, dtype=float) / np.iinfo(image.dtype).max
-    if image.size == 1:
-        image = image.item()
-        width = image.size[0]
-        height = image.size[1]
-        image1d = np.array(list(image.getdata()))
-        image2d = np.zeros(image.size)
-
-        for y in xrange(height):
-            for x in xrange(width):
-                image2d[y,x] = image1d[y*width + x]
+        image2d = np.array(image, dtype=float) / np.iinfo(image.dtype).max
     else:
         image2d = image.astype(float)
 
+    if image2d.ndim == 3:
+        image2d = np.sum(image, 2) / image.shape[2]
     return image2d

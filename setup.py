@@ -1,24 +1,5 @@
 import setuptools
 
-class Test(setuptools.Command):
-    user_options = [
-        ("pytest-args=", "a", "arguments to pass to py.test")
-    ]
-
-    def initialize_options(self):
-        self.pytest_args = []
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        import pytest
-        import sys
-
-        errno = pytest.main(self.pytest_args)
-
-        sys.exit(errno)
-
 setuptools.setup(
         author="Filip Mroz",
         author_email="fafafft@gmail.com",
@@ -37,9 +18,6 @@ setuptools.setup(
             "Topic :: Scientific/Engineering :: Image Recognition",
             "Topic :: Scientific/Engineering"
         ],
-        cmdclass={
-            "test": Test
-        },
         description="",
         include_package_data=True,
         install_requires=[

@@ -23,7 +23,7 @@ from input_utils import *
 
 class TestFitting(unittest.TestCase):
     def test_contour_fitting(self):
-        process.SEARCH_LENGTH_NORMAL = 20
+        process.SEARCH_LENGTH_NORMAL = 30
 
         img = prepare_image((80, 80))
         gt = np.zeros((80,80), dtype=int)

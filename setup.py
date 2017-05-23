@@ -13,6 +13,7 @@ class Test(setuptools.Command):
 
     def run(self):
         import pytest
+        import sys
 
         errno = pytest.main(self.pytest_args)
 

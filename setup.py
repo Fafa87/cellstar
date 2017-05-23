@@ -43,9 +43,9 @@ setuptools.setup(
         description="",
         include_package_data=True,
         install_requires=[
-            "numpy>=1.10.0",
-            "scipy>=0.14.0",
-            "Pillow>=2.5.3"
+            "numpy==1.12.0",
+            "scipy==0.19.0",
+            "Pillow==4.0.0"
         ],
         keywords="",
         license="BSD",
@@ -58,5 +58,5 @@ setuptools.setup(
             "pytest"
         ],
         url="https://github.com/CellProfiler/cellstar",
-        version="1.2.3rc1"
+        version="1.3.0"
 )

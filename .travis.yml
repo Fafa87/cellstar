@@ -5,8 +5,7 @@ cache:
 install:
   - pip install --upgrade pip
   - pip install --upgrade cython
-  - pip install --upgrade numpy
-  - pip install --upgrade scipy
+  - pip install numpy==1.12.0
   - pip install --upgrade --editable .
   - pip freeze
 language: python

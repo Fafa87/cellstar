@@ -1,5 +1,6 @@
 import setuptools
 
+
 class Test(setuptools.Command):
     user_options = [
         ("pytest-args=", "a", "arguments to pass to py.test")
@@ -13,10 +14,12 @@ class Test(setuptools.Command):
 
     def run(self):
         import pytest
+        import sys
 
-        errno = pytest.main(self.pytest_args)
+        errno = pytest.main(self.pytest_args + ' --ignore=utils/')
 
         sys.exit(errno)
+
 
 setuptools.setup(
         author="Filip Mroz",
@@ -39,23 +42,23 @@ setuptools.setup(
         cmdclass={
             "test": Test
         },
-        description="",
         include_package_data=True,
         install_requires=[
             "numpy>=1.10.0",
             "scipy>=0.14.0",
             "Pillow>=2.5.3"
         ],
-        keywords="",
+        keywords=["brightfield","yeast","segmentation"],
         license="BSD",
         long_description="",
         name="CellStar",
+        description="Algorithm for round cells identification in the brightfield microscopy images.",
         packages=setuptools.find_packages(exclude=[
             "tests", "utils"
         ]),
         setup_requires=[
             "pytest"
         ],
-        url="https://github.com/CellProfiler/cellstar",
-        version="1.2.3rc1"
+        url="https://github.com/Fafa87/cellstar",
+        version="1.3.0"
 )

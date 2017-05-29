@@ -16,7 +16,7 @@ Distributions
 -------------
 There are three ways of using CellStar:
 
-- python package https://github.com/CellProfiler/cellstar
+- python package https://github.com/Fafa87/cellstar
 
 - plugin for CellProfiler 2.2 http://cellstar-algorithm.strikingly.com/#download
 
@@ -25,7 +25,7 @@ There are three ways of using CellStar:
 The plugin package includes not only the plugin itself but also examples of its usage to guide users on how to achieve best segmentation on a given type of imagery.
 
 Wide range of example usages
---------------------
+----------------------------
 During the testing phase of our plugin it turned out that combining parameter fitting and CellProfiler pipeline flow can result in a very flexible solution. In order to show that and also provide a quick starting point for users the `Official user guide <https://drive.google.com/file/d/0B3to8FwFxuTHNnJZbXRIdTdWTFE/view>`_ was prepared.
 
 It contains the ready to use segmentation solution for a wide range of various imagery which includes:

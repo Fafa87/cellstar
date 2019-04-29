@@ -16,7 +16,7 @@ Distributions
 -------------
 There are three ways of using CellStar:
 
-- python package https://github.com/Fafa87/cellstar
+- python package https://github.com/Fafa87/cellstar (pip install cellstar)
 
 - plugin for CellProfiler 2.2 http://cellstar-algorithm.strikingly.com/#download
 

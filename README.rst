@@ -26,6 +26,19 @@ There are three ways of using CellStar:
 
 The plugin package includes not only the plugin itself but also examples of its usage to guide users on how to achieve best segmentation on a given type of imagery.
 
+How to use package
+------------------
+
+.. code-block:: python
+
+    import cellstar
+    input_image = scipy.misc.imread("input_images/sample_brightfield.tif")
+    segmentator = cellstar.Segmentation(segmentation_precision=9, avg_cell_diameter=35)
+    segmentator.set_frame(input_image)
+    segmentation, snakes = segmentator.run_segmentation()
+
+See and run examples/use_cellstar.py as well as tests for more details.
+
 Wide range of example usages
 ----------------------------
 During the testing phase of our plugin it turned out that combining parameter fitting and CellProfiler pipeline flow can result in a very flexible solution. In order to show that and also provide a quick starting point for users the `Official user guide <https://drive.google.com/file/d/0B3to8FwFxuTHNnJZbXRIdTdWTFE/view>`_ was prepared.

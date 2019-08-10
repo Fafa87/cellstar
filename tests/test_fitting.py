@@ -4,7 +4,7 @@ This file contains CellStar fitting tests.
 Date: 2013-2016
 Website: http://cellstar-algorithm.org/
 """
-
+import random
 import unittest
 
 import numpy as np
@@ -21,7 +21,12 @@ import cellstar.parameter_fitting.pf_rank_process as rank_process
 from cellstar.segmentation import Segmentation
 from input_utils import *
 
+
 class TestFitting(unittest.TestCase):
+    def setUp(self):
+        random.seed(44)
+        np.random.seed(44)
+
     def test_contour_fitting(self):
         process.SEARCH_LENGTH_NORMAL = 20
 

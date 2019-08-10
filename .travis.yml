@@ -17,4 +17,4 @@ sudo: false
 virtualenv:
   system_site_packages: true
 script:
-  - python setup.py test -a -x
+  - python setup.py test

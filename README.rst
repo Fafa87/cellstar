@@ -2,6 +2,8 @@ CellStar
 ========
 version 1.3.0
 
+.. image:: https://travis-ci.org/Fafa87/cellstar.svg?branch=master
+
 Introduction
 ------------
 Automatic tracking of cells in time-lapse microscopy is required to investigate a multitude of biological questions. To limit manipulations during cell line preparation and phototoxicity during imaging, brightfield imaging is often considered. Since the segmentation and tracking of cells in brightfield images is considered to be a difficult and complex task, a number of software solutions have been already developed.

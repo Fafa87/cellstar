@@ -53,4 +53,4 @@ It contains the ready to use segmentation solution for a wide range of various i
 
 The pipelines listed in the document along with the actual imagery are available as a part of plugin version. Every case can be easily to recreate the results.
 
-.. image:: http://res.cloudinary.com/hrscywv4p/image/upload/c_limit,fl_lossy,h_1440,w_720,f_auto,q_auto/v1/92051/tiles_ytp2ac.jpg
+.. image:: https://user-images.githubusercontent.com/9865688/62827684-7ca28f80-bbd4-11e9-9ff7-f9ee7591d732.png

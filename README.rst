@@ -1,8 +1,10 @@
 CellStar
 ========
-version 1.3.0
-
 .. image:: https://travis-ci.org/Fafa87/cellstar.svg?branch=master
+
+.. image:: https://img.shields.io/pypi/v/cellstar.svg
+.. image:: https://img.shields.io/pypi/pyversions/cellstar
+
 
 Introduction
 ------------

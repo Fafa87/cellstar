@@ -2,8 +2,10 @@ CellStar
 ========
 .. image:: https://travis-ci.org/Fafa87/cellstar.svg?branch=master
 
-.. image:: https://img.shields.io/pypi/v/cellstar.svg
+.. image:: https://img.shields.io/pypi/v/cellstar.svg 
+   :target: https://pypi.org/project/CellStar/
 .. image:: https://img.shields.io/pypi/pyversions/cellstar
+   :target: https://pypi.org/project/CellStar/
 
 
 Introduction

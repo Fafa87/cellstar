@@ -109,7 +109,7 @@ class SnakeFilter(object):
                                                                     str(curr_snake.max_contiguous_free_border) +
                                                                     ' over ' + str(max_free_border)))
                                 else:
-                                    local_segments[[vacant_snake]] = current_accepted_snake_index
+                                    local_segments[tuple([vacant_snake])] = current_accepted_snake_index
                                     filtered_snakes.append(curr_snake)
                                     current_accepted_snake_index += 1
 

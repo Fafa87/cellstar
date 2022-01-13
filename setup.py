@@ -45,7 +45,7 @@ setuptools.setup(
     install_requires=[
         "numpy==1.12.0",
         "scipy==0.19.0",
-        "Pillow==4.0.0"
+        "Pillow==9.0.0"
     ],
     keywords=["brightfield", "yeast", "segmentation"],
     license="BSD",

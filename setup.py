@@ -43,7 +43,7 @@ setuptools.setup(
     },
     include_package_data=True,
     install_requires=[
-        "numpy==1.12.0",
+        "numpy==1.21.0",
         "scipy==0.19.0",
         "Pillow==4.0.0"
     ],

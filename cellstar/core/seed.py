@@ -23,3 +23,6 @@ class Seed(Point):
         """
         super(Seed, self).__init__(x, y)
         self.origin = origin
+
+    def __hash__(self):
+        return hash((self.x, self.y, self.origin))

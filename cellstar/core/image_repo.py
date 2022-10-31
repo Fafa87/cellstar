@@ -200,7 +200,7 @@ class ImageRepo(object):
                               * self.parameters["segmentation"]["avgCellDiameter"])
         steps = self.parameters["segmentation"]["background"]["blurSteps"]
 
-        for i in xrange(steps):
+        for i in range(steps):
             background = image_smooth(background, 1 + round(smooth_radius * ((steps - i) / steps) ** 2), i != 0)
             background = background * foreground_mask + self.image * background_mask
 

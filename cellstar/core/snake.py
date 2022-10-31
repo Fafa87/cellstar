@@ -310,7 +310,7 @@ class Snake(object):
         # Calculate outer border brightness
         tmp = original_clean[out_border]
         self.avg_out_border_brightness = tmp.sum() / out_border_area
-        self.max_out_border_brightness = tmp.max() if tmp != [] else 0
+        self.max_out_border_brightness = tmp.max() if tmp.size else 0
 
         # Calculate inner border brightness
         tmp = original_clean[in_border]
@@ -319,7 +319,7 @@ class Snake(object):
         # Calculate inner brightness
         tmp = brighter[segment]
         self.avg_inner_brightness = tmp.sum() / self.area
-        self.max_inner_brightness = tmp.max() if tmp != [] else 0
+        self.max_inner_brightness = tmp.max() if tmp.size else 0
 
         # Calculate inner darkness
         tmp = cell_content_mask[segment]

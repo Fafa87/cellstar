@@ -46,7 +46,7 @@ class PFSnake(object):
     @staticmethod
     def merge_parameters(initial_parameters, new_params):
         params = copy.deepcopy(initial_parameters)
-        for k, v in new_params.iteritems():
+        for k, v in new_params.items():
             params["segmentation"]["stars"][k] = v
 
         return params
@@ -70,7 +70,7 @@ class PFSnake(object):
             snake.evaluate(self.polar_transform)
 
         self.snakes = [grown_snake for grown_snake, _ in snakes_to_grow]
-        self.best_snake = sorted(snakes_to_grow, key=lambda (sn, _): sn.rank)[0][0]
+        self.best_snake = sorted(snakes_to_grow, key=lambda snb: snb[0].rank)[0][0]
 
         return self
 

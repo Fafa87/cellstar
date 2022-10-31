@@ -71,7 +71,7 @@ class SnakeFilter(object):
         if len(snakes) > 0:
             snakes_sorted = sorted(enumerate(snakes), key=lambda x: x[1].rank)
             current_accepted_snake_index = 1
-            for i in xrange(len(snakes_sorted)):
+            for i in range(len(snakes_sorted)):
                 curr_snake = snakes_sorted[i][1]
                 snake_index = snakes_sorted[i][0]
 

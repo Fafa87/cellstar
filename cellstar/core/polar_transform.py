@@ -162,7 +162,7 @@ class PolarTransform(object):
                 idx = sub2ind(px.shape[0], (r, a))
                 val = idx + 1
                 # find places which belong to that index in 'dot_voronoi'
-                indices = np.array(zip(*np.nonzero(self.dot_voronoi == val)))
+                indices = np.array(list(zip(*np.nonzero(self.dot_voronoi == val))))
                 # set mask to 1 in above places
                 if len(indices) > 0:
                     mask[tuple(indices.T)] = 1

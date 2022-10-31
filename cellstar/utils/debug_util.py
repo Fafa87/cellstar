@@ -21,8 +21,8 @@ PROFILE_SPEED = False
 PROFILE_MEMORY = False
 
 # main switch which turn off all debugging utils (always deploy with False)
-DEBUGING = False
-SHOW = False
+DEBUGING = True
+SHOW = True
 
 SNAKE_PROPERTIES = False
 # allow the user to inspect cell star results before segmentation (only for debugging)
@@ -174,7 +174,7 @@ def explore_cellstar(cellstar=None, seeds=[], snakes=[], images=None, image=None
             #if app is not None:
             #    app.MainLoop()
         except Exception as ex:
-            print ex
+            print(ex)
             pass
 
         if value == exp.ExplorerFrame.ABORTED:

@@ -4,7 +4,7 @@ Pf rank process is the core of ranking parameters fitting.
 Date: 2013-2016
 Website: http://cellstar-algorithm.org/
 """
-
+import functools
 import operator as op
 import random
 import time
@@ -162,10 +162,10 @@ def run_multiprocess(image, gt_snakes, precision=None, avg_cell_diameter=None, m
         params = copy.deepcopy(initial_params)
         avg_cell_diameter = params["segmentation"]["avgCellDiameter"]
 
-    start = time.clock()
+    start = time.time()
     best_params, distance = multiproc_optimize((image, background_image, ignore_mask), gt_snakes, method, params)
     best_params_full = PFRankSnake.merge_rank_parameters(params, best_params)
-    stop = time.clock()
+    stop = time.time()
 
     logger.debug("Best: \n" + "\n".join([k + ": " + str(v) for k, v in sorted(best_params.iteritems())]))
     logger.debug("Time: %d" % (stop - start))
@@ -192,7 +192,7 @@ def run_singleprocess(image, gt_snakes, precision=None, avg_cell_diameter=None, 
         params = copy.deepcopy(initial_params)
         avg_cell_diameter = params["segmentation"]["avgCellDiameter"]
 
-    start = time.clock()
+    start = time.time()
 
     images = ImageRepo(image, params)
     images.background = background_image
@@ -214,8 +214,8 @@ def run_singleprocess(image, gt_snakes, precision=None, avg_cell_diameter=None, 
         [(gt_snake, grow_single_seed(seed, images, params, encoded_star_params)) for gt_snake, seed in
          gt_snake_seed_pairs]
 
-    gt_snake_grown_seed_pairs_all = reduce(op.add,
-                                           [PFRankSnake.create_all(gt, grown, params) for (gt, grown) in
+    gt_snake_grown_seed_pairs_all = functools.reduce(op.add,
+                                                     [PFRankSnake.create_all(gt, grown, params) for (gt, grown) in
                                             gt_snake_grown_seed_pairs])
 
     # gt_snake_grown_seed_pairs_filtered = filter_snakes_as_singles(params, images, gt_snake_grown_seed_pairs_all)
@@ -223,7 +223,7 @@ def run_singleprocess(image, gt_snakes, precision=None, avg_cell_diameter=None, 
 
     # gts_snakes_with_mutations = add_mutations(gt_snake_grown_seed_pairs_all, avg_cell_diameter)
     gts_snakes_with_mutations = gt_snake_grown_seed_pairs_filtered
-    ranked_snakes = zip(*gts_snakes_with_mutations)[1]
+    ranked_snakes = list(zip(*gts_snakes_with_mutations))[1]
 
     explore_cellstar(image=images.image, images=images, params=params,
                      seeds=[sp[1].grown_snake.seed for sp in gts_snakes_with_mutations],
@@ -236,7 +236,7 @@ def run_singleprocess(image, gt_snakes, precision=None, avg_cell_diameter=None, 
         pf_rank_get_ranking(ranked_snakes, params)
     )
 
-    stop = time.clock()
+    stop = time.time()
 
     best_params_org = pf_rank_parameters_decode(best_params_encoded)
     best_params_full = PFRankSnake.merge_rank_parameters(params, best_params_org)
@@ -287,10 +287,10 @@ def optimize_brute(params_to_optimize, distance_function):
     lower_bound += random_shift * step
     upper_bound += random_shift * step
 
-    start = time.clock()
+    start = time.time()
     result = opt.brute(distance_function, zip(lower_bound, upper_bound), finish=None, Ns=number_of_steps, disp=True,
                        full_output=True)
-    elapsed = time.clock() - start
+    elapsed = time.time() - start
 
     logger.debug("Opt finished: " + str(result[:2]) + " Elapsed[s]: " + str(elapsed))
 

@@ -210,14 +210,14 @@ def run(image, gt_snakes, precision, avg_cell_diameter, method='brute', initial_
     if ignore_mask is not None:
         images.apply_mask(ignore_mask)
 
-    start = time.clock()
+    start = time.time()
     best_3 = []
     calculations = 0
     best_arg, best_score = optimize(method, gt_snakes, images, params, precision, avg_cell_diameter)
 
     best_params = pf_parameters_decode(best_arg, get_size_weight_list(params))
 
-    stop = time.clock()
+    stop = time.time()
     logger.debug("Best: \n" + "\n".join([k + ": " + str(v) for k, v in sorted(best_params.iteritems())]))
     logger.debug("Time: %d" % (stop - start))
     logger.info("Parameter fitting finished with best score %f" % best_score)

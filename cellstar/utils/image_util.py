@@ -21,7 +21,7 @@ except:
     from scipy.fftpack.helper import next_fast_len
 
 
-from calc_util import extend_slices, fast_power, to_int
+from cellstar.utils.calc_util import extend_slices, fast_power, to_int
 
 
 def fft_convolve(in1, in2, times):
@@ -250,7 +250,7 @@ def image_blur(image, times):
         return fft_convolve(image, kernel, times)
     else:
         blurred = convolve(image, kernel)
-        for _ in xrange(int(times) - 1):
+        for _ in range(int(times) - 1):
             blurred = convolve(blurred, kernel)
         return blurred
 

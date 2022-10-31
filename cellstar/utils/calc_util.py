@@ -184,7 +184,7 @@ def polar_to_cartesian(polar_coordinate_boundary, origin_x, origin_y, polar_tran
 
 
 def mask_with_pil(ys, xs, yslice, xslice):
-    from PIL import Image
+    from PIL import Image, ImageDraw
     rxs = np.round(xs) - xslice[0]
     rys = np.round(ys) - yslice[0]
 
@@ -193,10 +193,15 @@ def mask_with_pil(ys, xs, yslice, xslice):
     rxys = list(zip(rxs, rys))
 
     img = Image.new('L', (lx, ly), 0)
-    draw = Image.core.draw(img.im, 0)
-    ink = draw.draw_ink(1)
-    draw.draw_polygon(rxys, 255, 1)
-    draw.draw_polygon(rxys, 255, 0)
+    try:
+        draw = Image.core.draw(img.im)
+        ink = draw.draw_ink(1, "white")
+        draw.draw_polygon(rxys, ink, 1)
+        draw.draw_polygon(rxys, ink, 0)
+    except TypeError:
+        draw = ImageDraw.Draw(img)
+        draw.polygon(rxys, 255)
+        draw.polygon(rxys, 255)
     return np.array(img) != 0
 
 

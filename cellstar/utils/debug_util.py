@@ -10,7 +10,7 @@ from os import makedirs
 from os.path import exists
 
 import numpy as np
-import scipy as sp
+import imageio
 
 from cellstar.core import image_repo
 
@@ -107,7 +107,9 @@ def image_save(image, title):
     if DEBUGING:
         prepare_debug_folder()
         file_path = os.path.join(debug_image_path, title + '.tif')
-        sp.misc.imsave(file_path, image)
+        if image.dtype == bool:
+            image = (image * 255).astype(np.uint8)
+        imageio.imsave(file_path, image)
         return file_path
     return None
 

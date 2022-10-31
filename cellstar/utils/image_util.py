@@ -7,8 +7,8 @@ Website: http://cellstar-algorithm.org/
 
 import numpy as np
 import scipy as sp
-import scipy.misc
 import scipy.ndimage
+import imageio
 from numpy import argwhere
 from numpy.fft import rfft2, irfft2
 from scipy.ndimage.filters import *
@@ -312,7 +312,7 @@ def set_image_border(image, val):
 def load_image(filename, scaling=True):
     if filename == '':
         return None
-    image = scipy.misc.imread(filename)
+    image = imageio.imread(filename)
     if image.max() > 1 and scaling:
         image2d = np.array(image, dtype=float) / np.iinfo(image.dtype).max
     else:

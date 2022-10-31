@@ -207,10 +207,10 @@ def find_maxima(image):
     up = np.zeros(image.shape, dtype=bool)
     down = np.zeros(image.shape, dtype=bool)
 
-    right[:, 0:width - 1] = image[:, 0:width - 1] > image[:, 1:width]
-    left[:, 1:width] = image[:, 1:width] > image[:, 0:width - 1]
-    up[0:height - 1, :] = image[0:height - 1, :] > image[1:height, :]
-    down[1:height, :] = image[1:height, :] > image[0:height - 1, :]
+    right[:, 0:width - 1] = image[:, 0:width - 1] >= image[:, 1:width]
+    left[:, 1:width] = image[:, 1:width] >= image[:, 0:width - 1]
+    up[0:height - 1, :] = image[0:height - 1, :] >= image[1:height, :]
+    down[1:height, :] = image[1:height, :] >= image[0:height - 1, :]
 
     return right & left & up & down
 

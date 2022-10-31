@@ -73,7 +73,7 @@ class TestFitting(unittest.TestCase):
         # find best 3 objects
         best3 = get_best_mask(segmentation2, 3)
         segmentation_quality = calculate_diff_fraction(best3, gt)
-        self.assertLessEqual(0.7, segmentation_quality)
+        self.assertLessEqual(0.65, segmentation_quality)
 
     def test_rank_fitting(self):
         img = prepare_image((80, 80))

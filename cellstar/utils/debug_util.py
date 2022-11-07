@@ -12,8 +12,6 @@ from os.path import exists
 import numpy as np
 import imageio
 
-from cellstar.core import image_repo
-
 debug_image_path = "debug"
 
 # profiling switches
@@ -109,6 +107,8 @@ def image_save(image, title):
         file_path = os.path.join(debug_image_path, title + '.tif')
         if image.dtype == bool:
             image = (image * 255).astype(np.uint8)
+        if image.dtype == np.float64:  # for easier visualisation
+            image = image.astype(np.float32)
         imageio.imsave(file_path, image)
         return file_path
     return None
@@ -198,7 +198,7 @@ def draw_snakes_on_axes(snakes, axes, outliers=.1):
         s_colors = [colors[int(rank_ci(s.rank))] for s in snakes]
 
         # we want the best on top
-        for snake, color in reversed(zip(snakes, s_colors)):
+        for snake, color in reversed(list(zip(snakes, s_colors))):
             axes.plot(snake.xs, snake.ys, c=color, linewidth=1.0)
 
 

@@ -243,10 +243,10 @@ def to_int(num):
 def fast_power(a, n):
     mn = a
     res = 1
-    n = int(n)
-    while n > 0:
-        if (n % 2 == 1):
+    nc = int(n)
+    while nc > 0:
+        if (nc % 2 == 1):
             res *= mn
         mn = mn * mn
-        n /= 2
+        nc //= 2
     return res

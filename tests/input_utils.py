@@ -25,9 +25,9 @@ def prepare_image(shape):
     return img
 
 
-def finish_image(img):
-    img = image.gaussian_filter(img, 3)
-    img = img + np.random.normal(0, 0.01, img.shape)
+def finish_image(img, gauss=3, noise=0.01):
+    img = image.gaussian_filter(img, gauss)
+    img = img + np.random.normal(0, noise, img.shape)
     return img
 
 

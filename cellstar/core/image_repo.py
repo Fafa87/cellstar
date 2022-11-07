@@ -201,11 +201,11 @@ class ImageRepo(object):
         steps = self.parameters["segmentation"]["background"]["blurSteps"]
 
         for i in range(steps):
-            background = image_smooth(background, 1 + round(smooth_radius * ((steps - i) / steps) ** 2), i != 0)
+            steps_float = float(steps)
+            background = image_smooth(background, 1 + round(smooth_radius * ((steps_float - i) / steps_float) ** 2), i != 0)
             background = background * foreground_mask + self.image * background_mask
 
         self._background = background
-        self._foreground_mask = foreground_mask
 
     def calculate_clean_original(self):
         self._clean_original = image_normalize(self.image - self.background)

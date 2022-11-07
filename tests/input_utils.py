@@ -33,6 +33,7 @@ def finish_image(img):
 
 def draw_cell(img, center, radius):
     draw_disc(img, center, radius + 2, .8)
+    draw_disc(img, center, radius + 1, .6)
     draw_disc(img, center, radius, .3)
 
 

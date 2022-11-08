@@ -1,6 +1,4 @@
 import sys
-
-import pytest
 import setuptools
 
 if sys.version_info[0] == 2:

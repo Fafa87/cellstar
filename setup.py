@@ -19,6 +19,7 @@ class Test(setuptools.Command):
         pass
 
     def run(self):
+        import pytest
         errno = pytest.main(self.pytest_args + ['--ignore', 'utils/'])
         sys.exit(errno)
 

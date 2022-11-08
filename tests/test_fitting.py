@@ -19,7 +19,7 @@ import cellstar.parameter_fitting.pf_process as process
 import cellstar.parameter_fitting.pf_rank_process as rank_process
 
 from cellstar.segmentation import Segmentation
-from input_utils import *
+from tests.input_utils import *
 
 
 class TestFitting(unittest.TestCase):

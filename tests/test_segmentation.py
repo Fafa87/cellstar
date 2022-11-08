@@ -8,7 +8,7 @@ Website: http://cellstar-algorithm.org/
 import unittest
 
 from cellstar.segmentation import Segmentation
-from input_utils import *
+from tests.input_utils import *
 
 
 class TestSegmentation(unittest.TestCase):

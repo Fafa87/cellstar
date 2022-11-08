@@ -167,7 +167,7 @@ def run_multiprocess(image, gt_snakes, precision=None, avg_cell_diameter=None, m
     best_params_full = PFRankSnake.merge_rank_parameters(params, best_params)
     stop = time.time()
 
-    logger.debug("Best: \n" + "\n".join([k + ": " + str(v) for k, v in sorted(best_params.iteritems())]))
+    logger.debug("Best: \n" + "\n".join([k + ": " + str(v) for k, v in sorted(best_params.items())]))
     logger.debug("Time: %d" % (stop - start))
     logger.info("Ranking parameter fitting (mp) finished with best score %f" % distance)
     return best_params_full, best_params, distance
@@ -245,7 +245,7 @@ def run_singleprocess(image, gt_snakes, precision=None, avg_cell_diameter=None, 
                      seeds=[sp[1].grown_snake.seed for sp in gts_snakes_with_mutations],
                      snakes=[sp[1].grown_snake for sp in gts_snakes_with_mutations])
 
-    logger.debug("Best: \n" + "\n".join([k + ": " + str(v) for k, v in sorted(best_params_org.iteritems())]))
+    logger.debug("Best: \n" + "\n".join([k + ": " + str(v) for k, v in sorted(best_params_org.items())]))
     logger.debug("Time: %d" % (stop - start))
     logger.info("Ranking parameter fitting finished with best score %f" % distance)
     return best_params_full, best_params_org, distance
@@ -300,7 +300,7 @@ def optimize_brute(params_to_optimize, distance_function):
 def optimize_basinhopping(params_to_optimize, distance_function):
     bounds = RankBounds
     # minimizer_kwargs = {"method": "COBYLA", bounds=bounds}
-    minimizer_kwargs = {"method": "L-BFGS-B", "bounds": zip(bounds.xmin, bounds.xmax)}
+    minimizer_kwargs = {"method": "L-BFGS-B", "bounds": list(zip(bounds.xmin, bounds.xmax))}
     result = opt.basinhopping(distance_function, params_to_optimize, accept_test=bounds,
                               minimizer_kwargs=minimizer_kwargs, niter=170)
     logger.debug("Opt finished: " + str(result))

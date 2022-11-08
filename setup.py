@@ -3,6 +3,11 @@ import sys
 import pytest
 import setuptools
 
+if sys.version_info[0] == 2:
+    numpy_version = "numpy>=1.16"
+else:
+    numpy_version = "numpy>=1.17"
+
 
 class Test(setuptools.Command):
     user_options = [
@@ -26,14 +31,11 @@ setuptools.setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
-        "Programming Language :: C",
-        "Programming Language :: C++",
-        "Programming Language :: Cython",
         "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Image Recognition",
         "Topic :: Scientific/Engineering"
@@ -43,11 +45,14 @@ setuptools.setup(
     },
     include_package_data=True,
     install_requires=[
-        "numpy==1.12.0",
-        "scipy==0.19.0",
-        "Pillow==4.0.0"
+        numpy_version,
+        "scipy==1.2.3",
+        "pillow==6.2.2",
+        "matplotlib==2.2.5",
+        "imageio==2.6.1",
+        "pathlib"
     ],
-    keywords=["brightfield", "yeast", "segmentation"],
+    keywords=["brightfield", "yeast", "segmentation", "adapting"],
     license="BSD",
     long_description="",
     name="CellStar",
@@ -59,5 +64,5 @@ setuptools.setup(
         "pytest"
     ],
     url="https://github.com/Fafa87/cellstar",
-    version="1.3.0"
+    version="2.0.0"
 )

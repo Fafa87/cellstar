@@ -45,10 +45,10 @@ setuptools.setup(
     include_package_data=True,
     install_requires=[
         numpy_version,
-        "scipy==1.2.3",
-        "pillow==6.2.2",
-        "matplotlib==2.2.5",
-        "imageio==2.6.1",
+        "scipy<=1.2.3",
+        "pillow<=6.2.2",
+        "matplotlib<=2.2.5",
+        "imageio<=2.6.1",
         "pathlib"
     ],
     keywords=["brightfield", "yeast", "segmentation", "adapting"],

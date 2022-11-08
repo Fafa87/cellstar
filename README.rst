@@ -36,7 +36,7 @@ How to use package
 .. code-block:: python
 
     import cellstar
-    input_image = scipy.misc.imread("input_images/sample_brightfield.tif")
+    input_image = imageio.imread("input_images/sample_brightfield.tif")
     segmentator = cellstar.Segmentation(segmentation_precision=9, avg_cell_diameter=35)
     segmentator.set_frame(input_image)
     segmentation, snakes = segmentator.run_segmentation()

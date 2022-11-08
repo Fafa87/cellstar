@@ -10,10 +10,12 @@ import math
 import numpy as np
 import scipy.ndimage as sp_image
 
-from index import Index
+from cellstar.utils.index import Index
 
 
-def euclidean_norm((x1, y1), (x2, y2)):
+def euclidean_norm(xy1, xy2):
+    (x1, y1) = xy1
+    (x2, y2) = xy2
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
 
@@ -91,7 +93,8 @@ def unstick_contour(edgepoints, unstick_coeff):
     return filtered
 
 
-def sub2ind(dim, (x, y)):
+def sub2ind(dim, xy):
+    x,y = xy
     return x + y * dim
 
 
@@ -181,23 +184,29 @@ def polar_to_cartesian(polar_coordinate_boundary, origin_x, origin_y, polar_tran
 
 
 def mask_with_pil(ys, xs, yslice, xslice):
-    from PIL import Image
+    from PIL import Image, ImageDraw
     rxs = np.round(xs) - xslice[0]
     rys = np.round(ys) - yslice[0]
 
     lx = xslice[1] - xslice[0]
     ly = yslice[1] - yslice[0]
-    rxys = zip(rxs, rys)
+    rxys = list(zip(rxs, rys))
 
     img = Image.new('L', (lx, ly), 0)
-    draw = Image.core.draw(img.im, 0)
-    ink = draw.draw_ink(1, "white")
-    draw.draw_polygon(rxys, ink, 1)
-    draw.draw_polygon(rxys, ink, 0)
+    try:
+        draw = Image.core.draw(img.im)
+        ink = draw.draw_ink(1, "white")
+        draw.draw_polygon(rxys, ink, 1)
+        draw.draw_polygon(rxys, ink, 0)
+    except TypeError:
+        draw = ImageDraw.Draw(img)
+        draw.polygon(rxys, 255, 1)
+        draw.polygon(rxys, 255, 0)
     return np.array(img) != 0
 
 
-def star_in_polygon((max_y, max_x), polar_coordinate_boundary, seed_x, seed_y, polar_transform):
+def star_in_polygon(max_yx, polar_coordinate_boundary, seed_x, seed_y, polar_transform):
+    max_y, max_x = max_yx
     polygon_x, polygon_y = polar_to_cartesian(polar_coordinate_boundary, seed_x, seed_y, polar_transform)
 
     polygon_x_bounded = np.maximum(0, np.minimum(max_x - 1, polygon_x))
@@ -234,10 +243,10 @@ def to_int(num):
 def fast_power(a, n):
     mn = a
     res = 1
-    n = int(n)
-    while n > 0:
-        if (n % 2 == 1):
+    nc = int(n)
+    while nc > 0:
+        if (nc % 2 == 1):
             res *= mn
         mn = mn * mn
-        n /= 2
+        nc //= 2
     return res

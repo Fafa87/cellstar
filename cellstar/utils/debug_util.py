@@ -10,9 +10,7 @@ from os import makedirs
 from os.path import exists
 
 import numpy as np
-import scipy as sp
-
-from cellstar.core import image_repo
+import imageio
 
 debug_image_path = "debug"
 
@@ -107,7 +105,11 @@ def image_save(image, title):
     if DEBUGING:
         prepare_debug_folder()
         file_path = os.path.join(debug_image_path, title + '.tif')
-        sp.misc.imsave(file_path, image)
+        if image.dtype == bool:
+            image = (image * 255).astype(np.uint8)
+        if image.dtype == np.float64:  # for easier visualisation
+            image = image.astype(np.float32)
+        imageio.imsave(file_path, image)
         return file_path
     return None
 
@@ -172,7 +174,7 @@ def explore_cellstar(cellstar=None, seeds=[], snakes=[], images=None, image=None
             #if app is not None:
             #    app.MainLoop()
         except Exception as ex:
-            print ex
+            print(ex)
             pass
 
         if value == exp.ExplorerFrame.ABORTED:
@@ -196,7 +198,7 @@ def draw_snakes_on_axes(snakes, axes, outliers=.1):
         s_colors = [colors[int(rank_ci(s.rank))] for s in snakes]
 
         # we want the best on top
-        for snake, color in reversed(zip(snakes, s_colors)):
+        for snake, color in reversed(list(zip(snakes, s_colors))):
             axes.plot(snake.xs, snake.ys, c=color, linewidth=1.0)
 
 

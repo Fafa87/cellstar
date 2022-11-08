@@ -26,6 +26,7 @@ class TestSegmentation(unittest.TestCase):
         img = prepare_image((50, 50))
         draw_cell(img, (10, 10), 6)
         draw_cell(img, (30, 15), 8)
+        img = finish_image(img, gauss=1, noise=0)
 
         cellstar = Segmentation(9, 10)
         cellstar.set_frame(img)
@@ -79,6 +80,7 @@ class TestSegmentation(unittest.TestCase):
         # background with cell looking noise
         draw_cell(img, (30, 40), 9)
         draw_cell(background, (30, 40), 9)
+        img = finish_image(img, gauss=1, noise=0)
 
         cellstar = Segmentation(9, 14)
         cellstar.set_frame(img)
@@ -106,6 +108,7 @@ class TestSegmentation(unittest.TestCase):
         draw_disc(gt, (150, 90), 25, 2)
         draw_cell(img, (180, 70), 20)
         draw_disc(gt, (180, 70), 20, 3)
+        img = finish_image(img, gauss=2, noise=0)
 
         cellstar = Segmentation(11, 60)
         cellstar.set_frame(img)
@@ -115,4 +118,4 @@ class TestSegmentation(unittest.TestCase):
         self.assertEqual(3, len(snakes))
 
         object_diffs = calculate_diffs_per_object(segmentation, gt)
-        self.assertLessEqual(0.8, min(object_diffs))
+        self.assertLessEqual(0.75, min(object_diffs))

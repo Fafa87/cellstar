@@ -12,7 +12,7 @@ random.seed(1)  # make it deterministic
 
 from cellstar.core.polar_transform import PolarTransform
 from cellstar.parameter_fitting.pf_snake import PFSnake
-import pf_mutator
+import cellstar.parameter_fitting.pf_mutator as pf_mutator
 
 
 class PFRankSnake(object):
@@ -43,7 +43,7 @@ class PFRankSnake(object):
     @staticmethod
     def merge_rank_parameters(initial_parameters, new_params):
         params = copy.deepcopy(initial_parameters)
-        for k, v in new_params.iteritems():
+        for k, v in new_params.items():
             params["segmentation"]["ranking"][k] = v
 
         return params

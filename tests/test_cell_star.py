@@ -46,7 +46,7 @@ class TestSegmentation(unittest.TestCase):
         star_parameters['brightnessWeight'] = 1.1
         star_parameters['cumBrightnessWeight'] = 2.2
         star_parameters['gradientWeight'] = 3.3
-        star_parameters['sizeWeight'] = 4.4
+        star_parameters['sizeWeight'] = 4.0
 
         rank_parameters = parameters['segmentation']['ranking']
         rank_parameters['avgBorderBrightnessWeight'] = 11.1
@@ -56,7 +56,7 @@ class TestSegmentation(unittest.TestCase):
         rank_parameters['maxInnerBrightnessWeight'] = 15.5
 
         encoded = Segmentation.encode_auto_params_from_all_params(parameters)
-        self.assertEqual("[[1.1, 2.2, 3.3, 4.4000000000000004], [11.1, 12.2, 13.3, 14.4, 15.5]]", encoded)
+        self.assertEqual("[[1.1, 2.2, 3.3, 4.0], [11.1, 12.2, 13.3, 14.4, 15.5]]", encoded)
 
         # check list size weight
         star_parameters['sizeWeight'] = [2, 5, 11]
@@ -65,7 +65,7 @@ class TestSegmentation(unittest.TestCase):
 
     def test_encode_decode_auto_params(self):
         parameters = params_util.default_parameters(10, 30)
-        encoded = "[[1.31, 6.2, -8.3, 4.4000000000000004], [4.1, 2.88, 773.3, 14, -34]]"
+        encoded = "[[1.31, 6.2, -8.3, 4.0], [4.1, 2.88, 773.3, 14, -34]]"
         self.assertEqual(True, Segmentation.decode_auto_params_into(parameters, encoded))
 
         encoded_back = Segmentation.encode_auto_params_from_all_params(parameters)

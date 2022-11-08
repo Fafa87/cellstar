@@ -71,7 +71,7 @@ class SnakeFilter(object):
         if len(snakes) > 0:
             snakes_sorted = sorted(enumerate(snakes), key=lambda x: x[1].rank)
             current_accepted_snake_index = 1
-            for i in xrange(len(snakes_sorted)):
+            for i in range(len(snakes_sorted)):
                 curr_snake = snakes_sorted[i][1]
                 snake_index = snakes_sorted[i][0]
 
@@ -109,7 +109,7 @@ class SnakeFilter(object):
                                                                     str(curr_snake.max_contiguous_free_border) +
                                                                     ' over ' + str(max_free_border)))
                                 else:
-                                    local_segments[[vacant_snake]] = current_accepted_snake_index
+                                    local_segments[tuple([vacant_snake])] = current_accepted_snake_index
                                     filtered_snakes.append(curr_snake)
                                     current_accepted_snake_index += 1
 

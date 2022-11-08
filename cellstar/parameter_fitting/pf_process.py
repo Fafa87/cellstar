@@ -153,7 +153,7 @@ def prepare_snake_seed_pairs(gt_snakes, initial_parameters):
 
 def pf_get_distances(gt_snakes, images, initial_parameters, callback=None):
     gt_snake_seed_pairs = prepare_snake_seed_pairs(gt_snakes, initial_parameters)
-    pick_seed_pairs = max(min_number_of_chosen_seeds, max_number_of_chosen_snakes /
+    pick_seed_pairs = max(min_number_of_chosen_seeds, max_number_of_chosen_snakes //
                           len(initial_parameters["segmentation"]["stars"]["sizeWeight"]))
     chosen_gt_snake_seed_pairs = gt_snake_seed_pairs[:pick_seed_pairs]
 
@@ -210,15 +210,15 @@ def run(image, gt_snakes, precision, avg_cell_diameter, method='brute', initial_
     if ignore_mask is not None:
         images.apply_mask(ignore_mask)
 
-    start = time.clock()
+    start = time.time()
     best_3 = []
     calculations = 0
     best_arg, best_score = optimize(method, gt_snakes, images, params, precision, avg_cell_diameter)
 
     best_params = pf_parameters_decode(best_arg, get_size_weight_list(params))
 
-    stop = time.clock()
-    logger.debug("Best: \n" + "\n".join([k + ": " + str(v) for k, v in sorted(best_params.iteritems())]))
+    stop = time.time()
+    logger.debug("Best: \n" + "\n".join([k + ": " + str(v) for k, v in sorted(best_params.items())]))
     logger.debug("Time: %d" % (stop - start))
     logger.info("Parameter fitting finished with best score %f" % best_score)
     return PFSnake.merge_parameters(params, best_params), best_arg, best_score
@@ -263,12 +263,13 @@ def optimize(method_name, gt_snakes, images, params, precision, avg_cell_diamete
             best_params_encoded, distance = optimize_basinhopping(best_params_encoded, fast_distance, time_percent=search_length)
         elif method_name == 'brutemax3basin':
             _, _ = optimize_brute(encoded_params, fast_distance)
-            logger.debug("Best grid parameters distance are %s." % str(zip(*best_3)[0]))
-            logger.debug("3-best grid parameters  are %s." % str(zip(*best_3)[1]))
+            best_3_unzip = list(zip(*best_3))
+            logger.debug("Best grid parameters distance are %s." % str(best_3_unzip[0]))
+            logger.debug("3-best grid parameters  are %s." % str(best_3_unzip[1]))
 
             best_basins = []
             for candidate in list(best_3):
-                best_basins.append(optimize_basinhopping(candidate[1], fast_distance, time_percent=search_length/3))
+                best_basins.append(optimize_basinhopping(candidate[1], fast_distance, time_percent=search_length//3))
             best_basins.sort(key=lambda x: x[1])
 
             best_params_encoded, distance = best_basins[0]
@@ -296,8 +297,9 @@ def optimize_brute(params_to_optimize, distance_function):
     lower_bound += random_shift * step
     upper_bound += random_shift * step
 
-    logger.debug("Search range: " + str(zip(lower_bound, upper_bound)))
-    result = opt.brute(distance_function, zip(lower_bound, upper_bound), Ns=number_of_steps, disp=True, finish=None,
+    search_range = list(zip(lower_bound, upper_bound))
+    logger.debug("Search range: " + str(search_range))
+    result = opt.brute(distance_function, search_range, Ns=number_of_steps, disp=True, finish=None,
                        full_output=True)
     logger.debug("Opt finished:" + str(result[:2]))
     return result[0], result[1]
@@ -309,7 +311,7 @@ def optimize_basinhopping(params_to_optimize, distance_function, time_percent=10
     # minimizer_kwargs = {"method": "L-BFGS-B", "bounds" : zip(bounds.xmin,bounds.xmax)}
     bounds = None
     result = opt.basinhopping(distance_function, params_to_optimize, accept_test=bounds,
-                              minimizer_kwargs=minimizer_kwargs, niter=35 * time_percent / 100)
+                              minimizer_kwargs=minimizer_kwargs, niter=35 * time_percent // 100)
     logger.debug("Opt finished: " + str(result))
     return result.x, result.fun
 

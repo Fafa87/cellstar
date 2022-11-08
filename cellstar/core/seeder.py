@@ -22,7 +22,7 @@ class Seeder(object):
         @type parameters: dict
         """
         self.images = images
-        np.random.seed(abs(hash(abs(np.sum(images.image)))))
+        np.random.seed(abs(hash(abs(np.sum(images.image)))) % (1 << 31))
         random.seed(abs(np.sum(images.image)))
         self.parameters = parameters
         self.cluster_min_distance = self.parameters["segmentation"]["seeding"]["minDistance"] \
@@ -37,7 +37,7 @@ class Seeder(object):
         origin = 'cluster'
         if len(seeds) > 0:
             origin = seeds[0].origin
-        seeds = np.array(map(lambda s: (s.x, s.y), seeds))
+        seeds = np.array(list(map(lambda s: (s.x, s.y), seeds)))
         my_inf = \
             np.inf if seeds.dtype.kind == 'f' else np.iinfo(seeds.dtype).max
         while len(seeds) > 1:
@@ -146,7 +146,7 @@ class Seeder(object):
 
         maxima = find_maxima(blurred) * foreground_mask
 
-        maxima_coords = sp.nonzero(maxima)
+        maxima_coords = np.nonzero(maxima)
         seeds = zip(maxima_coords[1], maxima_coords[0])
 
         seed_points = point_list_as_seeds(seeds, origin)
@@ -253,7 +253,7 @@ class Seeder(object):
                     seeds_grid.add_seed(xx, yy, seed)
 
         # Fill grid with current seeds
-        for i in xrange(len(seeds)):
+        for i in range(len(seeds)):
             seed = seeds[i]
             x = max(0, int(round(seed.x / distance)))
             y = max(0, int(round(seed.y / distance)))

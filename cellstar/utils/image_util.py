@@ -7,8 +7,8 @@ Website: http://cellstar-algorithm.org/
 
 import numpy as np
 import scipy as sp
-import scipy.misc
 import scipy.ndimage
+import imageio
 from numpy import argwhere
 from numpy.fft import rfft2, irfft2
 from scipy.ndimage.filters import *
@@ -21,7 +21,7 @@ except:
     from scipy.fftpack.helper import next_fast_len
 
 
-from calc_util import extend_slices, fast_power, to_int
+from cellstar.utils.calc_util import extend_slices, fast_power, to_int
 
 
 def fft_convolve(in1, in2, times):
@@ -208,9 +208,9 @@ def find_maxima(image):
     down = np.zeros(image.shape, dtype=bool)
 
     right[:, 0:width - 1] = image[:, 0:width - 1] > image[:, 1:width]
-    left[:, 1:width] = image[:, 1:width] > image[:, 0:width - 1]
+    left[:, 1:width] = image[:, 1:width] >= image[:, 0:width - 1]
     up[0:height - 1, :] = image[0:height - 1, :] > image[1:height, :]
-    down[1:height, :] = image[1:height, :] > image[0:height - 1, :]
+    down[1:height, :] = image[1:height, :] >= image[0:height - 1, :]
 
     return right & left & up & down
 
@@ -250,7 +250,7 @@ def image_blur(image, times):
         return fft_convolve(image, kernel, times)
     else:
         blurred = convolve(image, kernel)
-        for _ in xrange(int(times) - 1):
+        for _ in range(int(times) - 1):
             blurred = convolve(blurred, kernel)
         return blurred
 
@@ -312,7 +312,7 @@ def set_image_border(image, val):
 def load_image(filename, scaling=True):
     if filename == '':
         return None
-    image = scipy.misc.imread(filename)
+    image = imageio.imread(filename)
     if image.max() > 1 and scaling:
         image2d = np.array(image, dtype=float) / np.iinfo(image.dtype).max
     else:

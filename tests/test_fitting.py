@@ -38,7 +38,6 @@ class TestFitting(unittest.TestCase):
         draw_disc(gt, (40, 25), 8, 2)
         draw_weak_cell(img, (30, 40), 9)
         draw_disc(gt, (30, 40), 9, 3)
-
         img = finish_image(img)
 
         cellstar = Segmentation(11, 20)
@@ -73,7 +72,7 @@ class TestFitting(unittest.TestCase):
         # find best 3 objects
         best3 = get_best_mask(segmentation2, 3)
         segmentation_quality = calculate_diff_fraction(best3, gt)
-        self.assertLessEqual(0.7, segmentation_quality)
+        self.assertLessEqual(0.65, segmentation_quality)
 
     def test_rank_fitting(self):
         img = prepare_image((80, 80))
@@ -103,6 +102,8 @@ class TestFitting(unittest.TestCase):
         best3 = get_best_mask(segmentation, 3)
         segmentation_quality = calculate_diff_fraction(best3, gt)
         self.assertLessEqual(segmentation_quality, 0.01)
+        cells_inside_gt_mask = np.count_nonzero((best3 > 0) & (gt > 0)) / np.count_nonzero((best3 > 0))
+        self.assertLessEqual(cells_inside_gt_mask, 0.1)
 
         new_params, _ = run_rank_pf(img, None, None, gt, cellstar.parameters)
         cellstar = Segmentation(11, 20)
@@ -121,4 +122,8 @@ class TestFitting(unittest.TestCase):
         self.assertLessEqual(0.3, segmentation_quality)  # there was no contour fitting
 
         object_diffs = calculate_diffs_per_object(best3, gt)
-        self.assertLessEqual(0.3, min(object_diffs))
+        self.assertLessEqual(0.2, min(object_diffs))
+
+        # check how much resulting snakes are inside ground truth
+        cells_inside_gt_mask = np.count_nonzero((best3 > 0) & (gt > 0)) / np.count_nonzero((best3 > 0))
+        self.assertLessEqual(0.9, cells_inside_gt_mask)

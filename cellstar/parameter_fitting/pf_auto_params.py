@@ -39,7 +39,7 @@ class OptimisationBounds(object):
         bounds.xmin = []
         bounds.xmax = []
         # bound only two parameters
-        for k, v in list(sorted(ranges_dict.iteritems())):
+        for k, _ in list(sorted(ranges_dict.items())):
             if k == "borderThickness":
                 bounds.xmin.append(0.001)
                 bounds.xmax.append(2)
@@ -80,7 +80,7 @@ def pf_parameters_encode(parameters):
     """
     parameters = parameters["segmentation"]["stars"]
     point = []
-    for name, (_, _) in sorted(parameters_range.iteritems()):
+    for name, (_, _) in sorted(parameters_range.items()):
         val = parameters[name]
         if name == "sizeWeight":
             if not isinstance(val, float):
@@ -96,7 +96,7 @@ def pf_parameters_decode(param_vector, org_size_weights_list):
     @return:
     """
     parameters = {}
-    for (name, (_, _)), val in zip(sorted(parameters_range.iteritems()), param_vector):
+    for (name, (_, _)), val in zip(sorted(parameters_range.items()), param_vector):
         if name == "sizeWeight":
             val = list(np.array(org_size_weights_list) * (val / np.mean(org_size_weights_list)))
         elif name == "borderThickness":
@@ -123,7 +123,7 @@ def pf_rank_parameters_encode(parameters, complete_params_given=True):
         parameters = parameters["segmentation"]["ranking"]
 
     point = []
-    for name, (vmin, vmax) in sorted(rank_parameters_range.iteritems()):
+    for name, (vmin, vmax) in sorted(rank_parameters_range.items()):
         val = parameters[name]
         if vmax - vmin == 0:
             point.append(0)
@@ -138,7 +138,7 @@ def pf_rank_parameters_decode(param_vector):
     @return: only ranking parameters as a dict
     """
     parameters = {}
-    for (name, (vmin, vmax)), val in zip(sorted(rank_parameters_range.iteritems()), param_vector):
+    for (name, (vmin, vmax)), val in zip(sorted(rank_parameters_range.items()), param_vector):
         rescaled = vmin + val * (vmax - vmin)
         parameters[name] = rescaled
 

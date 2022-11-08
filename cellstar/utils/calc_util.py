@@ -200,8 +200,8 @@ def mask_with_pil(ys, xs, yslice, xslice):
         draw.draw_polygon(rxys, ink, 0)
     except TypeError:
         draw = ImageDraw.Draw(img)
-        draw.polygon(rxys, 255)
-        draw.polygon(rxys, 255)
+        draw.polygon(rxys, 255, 1)
+        draw.polygon(rxys, 255, 0)
     return np.array(img) != 0
 
 

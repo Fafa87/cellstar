@@ -118,4 +118,4 @@ class TestSegmentation(unittest.TestCase):
         self.assertEqual(3, len(snakes))
 
         object_diffs = calculate_diffs_per_object(segmentation, gt)
-        self.assertLessEqual(0.8, min(object_diffs))
+        self.assertLessEqual(0.75, min(object_diffs))

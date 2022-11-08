@@ -19,8 +19,8 @@ PROFILE_SPEED = False
 PROFILE_MEMORY = False
 
 # main switch which turn off all debugging utils (always deploy with False)
-DEBUGING = True
-SHOW = True
+DEBUGING = False
+SHOW = False
 
 SNAKE_PROPERTIES = False
 # allow the user to inspect cell star results before segmentation (only for debugging)

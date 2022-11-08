@@ -7,4 +7,4 @@ Website: http://cellstar-algorithm.org/
 __author__ = 'Adam Kaczmarek, Filip Mróz, Szymon Stoma'
 __all__ = ["segmentation"]
 
-from segmentation import Segmentation
+from .segmentation import Segmentation

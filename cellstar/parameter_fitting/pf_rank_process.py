@@ -288,7 +288,7 @@ def optimize_brute(params_to_optimize, distance_function):
     upper_bound += random_shift * step
 
     start = time.time()
-    result = opt.brute(distance_function, zip(lower_bound, upper_bound), finish=None, Ns=number_of_steps, disp=True,
+    result = opt.brute(distance_function, list(zip(lower_bound, upper_bound)), finish=None, Ns=number_of_steps, disp=True,
                        full_output=True)
     elapsed = time.time() - start
 

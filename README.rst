@@ -6,6 +6,8 @@ CellStar
    :target: https://pypi.org/project/CellStar/
 .. image:: https://img.shields.io/pypi/pyversions/cellstar
    :target: https://pypi.org/project/CellStar/
+.. image:: https://img.shields.io/badge/platform-windows%20%7C%20osx%20%7C%20ubuntu-lightgrey
+   :target: https://pypi.org/project/CellStar/
 
 
 Introduction

@@ -1,6 +1,7 @@
 CellStar
 ========
-.. image:: https://github.com/Fafa87/docs/actions/workflows/run_tests.yml/badge.svg
+.. image:: https://github.com/Fafa87/cellstar/actions/workflows/run_tests.yml/badge.svg?branch=master
+   :target: https://github.com/Fafa87/cellstar/actions/workflows/run_tests.yml
 .. image:: https://img.shields.io/pypi/v/cellstar.svg 
    :target: https://pypi.org/project/CellStar/
 .. image:: https://img.shields.io/pypi/pyversions/cellstar

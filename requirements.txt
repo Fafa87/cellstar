@@ -1,7 +1,7 @@
 numpy==1.16.6;python_version < '3.0'
 numpy==1.17.5;python_version > '3.0'
 scipy==1.2.3
-pillow==6.2.2
+pillow==9.0.1
 matplotlib==2.2.5
 imageio==2.6.1
 pathlib

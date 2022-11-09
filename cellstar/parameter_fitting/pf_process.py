@@ -308,7 +308,7 @@ def optimize_brute(params_to_optimize, distance_function):
 def optimize_basinhopping(params_to_optimize, distance_function, time_percent=100):
     minimizer_kwargs = {"method": "COBYLA"}
     # bounds = ContourBounds
-    # minimizer_kwargs = {"method": "L-BFGS-B", "bounds" : zip(bounds.xmin,bounds.xmax)}
+    # minimizer_kwargs = {"method": "L-BFGS-B", "bounds" : list(zip(bounds.xmin,bounds.xmax))}
     bounds = None
     result = opt.basinhopping(distance_function, params_to_optimize, accept_test=bounds,
                               minimizer_kwargs=minimizer_kwargs, niter=35 * time_percent // 100)

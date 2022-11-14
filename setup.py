@@ -8,6 +8,9 @@ else:
     numpy_version = "numpy>=1.17"
     scipy_version = "scipy>=1.5.3"
 
+with open("README.rst") as f:
+    long_description = f.read()
+
 
 class Test(setuptools.Command):
     user_options = [
@@ -55,7 +58,7 @@ setuptools.setup(
     ],
     keywords=["brightfield", "yeast", "segmentation", "adapting"],
     license="BSD",
-    long_description="",
+    long_description=long_description,
     name="CellStar",
     description="Algorithm for round cells identification in the brightfield microscopy images.",
     packages=setuptools.find_packages(exclude=[

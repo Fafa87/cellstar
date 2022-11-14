@@ -40,7 +40,7 @@ class TestFitting(unittest.TestCase):
         draw_disc(gt, (30, 40), 9, 3)
         img = finish_image(img)
 
-        cellstar = Segmentation(11, 20)
+        cellstar = Segmentation(11, 16)
 
         # break parameters
         weights = cellstar.parameters["segmentation"]["stars"]["sizeWeight"]
@@ -59,8 +59,8 @@ class TestFitting(unittest.TestCase):
         self.assertGreater(3, segmentation.max())
         self.assertGreater(3, len(snakes))
 
-        new_params, _ = run_pf(img, None, None, gt, cellstar.parameters, 11, 20)
-        cellstar = Segmentation(11, 20)
+        new_params, _ = run_pf(img, None, None, gt, cellstar.parameters, 11, 16)
+        cellstar = Segmentation(11, 16)
         cellstar.parameters = new_params
         cellstar.set_frame(img)
 
@@ -70,9 +70,17 @@ class TestFitting(unittest.TestCase):
         self.assertLessEqual(3, len(snakes2))
 
         # find best 3 objects
-        best3 = get_best_mask(segmentation2, 3)
-        segmentation_quality = calculate_diff_fraction(best3, gt)
-        self.assertLessEqual(0.65, segmentation_quality)
+        object_diffs = calculate_diffs_per_object(segmentation2, gt)
+        print(object_diffs)
+        assert object_diffs[0] > 0.65
+        assert object_diffs[1] > 0.65
+        assert object_diffs[2] > 0.65
+
+        # No ranking fitting done so it may not be the best mask, thus below test is incorrect.
+        # best3 = get_best_mask(segmentation2, 3)
+        # segmentation_quality = calculate_diff_fraction(best3, gt)
+        # print("segmentation_quality", segmentation_quality)
+        # self.assertLessEqual(0.65, segmentation_quality)
 
     def test_rank_fitting(self):
         img = prepare_image((80, 80))

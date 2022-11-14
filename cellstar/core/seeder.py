@@ -22,8 +22,8 @@ class Seeder(object):
         @type parameters: dict
         """
         self.images = images
-        np.random.seed(abs(hash(abs(np.sum(images.image)))) % (1 << 31))
-        random.seed(abs(np.sum(images.image)))
+        np.random.seed(abs(np.sum(images.image).astype(np.int64)))
+        random.seed(abs(np.sum(images.image).astype(np.int64)))
         self.parameters = parameters
         self.cluster_min_distance = self.parameters["segmentation"]["seeding"]["minDistance"] \
                                     * self.parameters["segmentation"]["avgCellDiameter"]

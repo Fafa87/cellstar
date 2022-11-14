@@ -83,6 +83,9 @@ def calculate_diffs_per_object(seg, gt):
         if len(gt_masks) > 0:
             diffs = [calculate_diff_fraction(s, g) for g in gt_masks]
             best_id = np.argmax(diffs)
+            if diffs[best_id] == 0:
+                res.append(0)
+                continue
             res.append(diffs[best_id])
             gt_masks.pop(best_id)
         else:

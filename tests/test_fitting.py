@@ -71,7 +71,7 @@ class TestFitting(unittest.TestCase):
 
         # find best 3 objects
         object_diffs = calculate_diffs_per_object(segmentation2, gt)
-        print(object_diffs)
+        object_diffs.sort(reverse=True)
         assert object_diffs[0] > 0.65
         assert object_diffs[1] > 0.65
         assert object_diffs[2] > 0.65

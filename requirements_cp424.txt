@@ -1,0 +1,6 @@
+numpy==1.23.1
+scipy==1.9.0
+pillow==9.2.0
+matplotlib==2.2.5
+imageio==2.21.1
+pathlib

@@ -48,7 +48,7 @@ setuptools.setup(
     install_requires=[
         numpy_version,
         scipy_version,
-        "pillow<=6.2.2",
+        "pillow<9.3.1",
         "matplotlib<=2.2.5",
         "imageio<=2.6.1",
         "pathlib"

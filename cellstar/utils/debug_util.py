@@ -10,7 +10,6 @@ from os import makedirs
 from os.path import exists
 
 import numpy as np
-import imageio
 
 debug_image_path = "debug"
 
@@ -26,8 +25,9 @@ SNAKE_PROPERTIES = False
 # allow the user to inspect cell star results before segmentation (only for debugging)
 EXPLORE = False
 
-# pyplot import can fail if cellstar used as a plugin
+# pyplot and imageio import can fail if cellstar used as a plugin
 try:
+    import imageio
     import matplotlib
     import matplotlib.pyplot as plt
 

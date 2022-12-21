@@ -8,7 +8,6 @@ Website: http://cellstar-algorithm.org/
 import numpy as np
 import scipy as sp
 import scipy.ndimage
-import imageio
 from numpy import argwhere
 from numpy.fft import rfft2, irfft2
 from scipy.ndimage.filters import *
@@ -310,6 +309,7 @@ def set_image_border(image, val):
 
 
 def load_image(filename, scaling=True):
+    import imageio  # not available when used as a plugin
     if filename == '':
         return None
     image = imageio.imread(filename)

@@ -9,7 +9,6 @@ import unittest
 
 import imageio
 
-import test_image_repo
 from cellstar.segmentation import Segmentation
 import cellstar.utils.debug_util
 from tests.input_utils import *

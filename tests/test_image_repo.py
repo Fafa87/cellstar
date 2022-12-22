@@ -8,26 +8,7 @@ import numpy.testing as nptest
 import cellstar.utils.params_util
 import cellstar.core.image_repo
 import cellstar.utils.debug_util
-from tests.input_utils import prepare_image, draw_cell, draw_disc
-
-TESTS = os.path.dirname(__file__)
-
-
-def get_input(sample_file):
-    return os.path.join(TESTS, "data", sample_file)
-
-
-def get_expected(sample_file, name):
-    sample_name = os.path.splitext(sample_file)[0]
-    return os.path.join(TESTS, "expected", sample_name, name + ".tif")
-
-
-def prepare_output_dir(sample_file):
-    sample_name = os.path.splitext(sample_file)[0]
-    output_dir = os.path.join(TESTS, "output", sample_name)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    return output_dir
+from tests.input_utils import prepare_image, draw_cell, draw_disc, prepare_output_dir, get_input, get_expected
 
 
 class TestImageRepo(unittest.TestCase):

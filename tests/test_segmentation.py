@@ -4,14 +4,21 @@ This file contains complete CellStar segmentation tests.
 Date: 2013-2016
 Website: http://cellstar-algorithm.org/
 """
-
+import pathlib
 import unittest
 
+import imageio
+
+import test_image_repo
 from cellstar.segmentation import Segmentation
+import cellstar.utils.debug_util
 from tests.input_utils import *
 
 
 class TestSegmentation(unittest.TestCase):
+    def setUp(self):
+        self.debug_image_path = cellstar.utils.debug_util.debug_image_path
+
     def test_no_objects(self):
         img = prepare_image((50, 50))
 
@@ -119,3 +126,20 @@ class TestSegmentation(unittest.TestCase):
 
         object_diffs = calculate_diffs_per_object(segmentation, gt)
         self.assertLessEqual(0.75, min(object_diffs))
+
+    def test_sample_image(self):
+        input_image = imageio.imread(get_input("sample_brightfield.tif"))
+        output_dir = pathlib.Path(prepare_output_dir("sample_brightfield"))
+        cellstar.utils.debug_util.debug_image_path = str(output_dir)
+
+        segmentator = Segmentation(segmentation_precision=9, avg_cell_diameter=35)
+        segmentator.set_frame(input_image)
+        segmentation, snakes = segmentator.run_segmentation()
+
+        imageio.imsave(output_dir / "segmented.tif", (segmentation * 20).astype(np.uint8))
+
+        self.assertGreaterEqual(segmentation.max(), 8)
+        self.assertLessEqual(segmentation.max(), 9)
+
+    def tearDown(self):
+        cellstar.utils.debug_util.debug_image_path = self.debug_image_path

@@ -4,6 +4,7 @@ This file contains method for input imagery creation for other unit tests..
 Date: 2013-2016
 Website: http://cellstar-algorithm.org/
 """
+import os
 
 import numpy as np
 import scipy.ndimage as image
@@ -17,6 +18,26 @@ def turn_on_debug():
 
 def turn_off_debug():
     debug_util.DEBUGING = False
+
+
+TESTS = os.path.dirname(__file__)
+
+
+def get_input(sample_file):
+    return os.path.join(TESTS, "data", sample_file)
+
+
+def get_expected(sample_file, name):
+    sample_name = os.path.splitext(sample_file)[0]
+    return os.path.join(TESTS, "expected", sample_name, name + ".tif")
+
+
+def prepare_output_dir(sample_file):
+    sample_name = os.path.splitext(sample_file)[0]
+    output_dir = os.path.join(TESTS, "output", sample_name)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    return output_dir
 
 
 def prepare_image(shape):
@@ -40,6 +61,7 @@ def draw_cell(img, center, radius):
 def draw_weak_cell(img, center, radius):
     draw_disc(img, center, radius + 2, .8)
     draw_disc(img, center, radius, .45)
+
 
 def draw_very_weak_cell(img, center, radius):
     draw_disc(img, center, radius + 2, .55)

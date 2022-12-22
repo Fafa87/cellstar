@@ -43,7 +43,8 @@ except:
 user32_dll = None
 try:
     import ctypes
-    user32_dll = ctypes.WinDLL ("User32.dll")
+
+    user32_dll = ctypes.WinDLL("User32.dll")
     user32_dll.GetKeyState.restype = ctypes.c_short
 except:
     pass
@@ -171,7 +172,7 @@ def explore_cellstar(cellstar=None, seeds=[], snakes=[], images=None, image=None
             explorer.stick_snakes = snakes
             value = explorer_ui.ShowModal()
 
-            #if app is not None:
+            # if app is not None:
             #    app.MainLoop()
         except Exception as ex:
             print(ex)
@@ -179,6 +180,22 @@ def explore_cellstar(cellstar=None, seeds=[], snakes=[], images=None, image=None
 
         if value == exp.ExplorerFrame.ABORTED:
             raise Exception("Execution aborted")
+
+
+def draw_poly_on_image(image, xs, ys, output_name):
+    if DEBUGING:
+        prepare_debug_folder()
+
+        fig = plt.figure("draw_poly")
+        plt.imshow(image, cmap=plt.cm.gray, interpolation='none')
+        fig.axes[0].plot(xs, ys, c='red', linewidth=1.0)
+
+        plt.savefig(os.path.join(debug_image_path, output_name + ".png"), pad_inches=0.0)
+        if SHOW:
+            plt.show()
+
+        fig.clf()
+        plt.close(fig)
 
 
 def draw_snakes_on_axes(snakes, axes, outliers=.1):
@@ -216,6 +233,7 @@ def draw_snakes(image, snakes, outliers=.1, it=0):
 
         fig.clf()
         plt.close(fig)
+
 
 try:
     import line_profiler

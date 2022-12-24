@@ -195,8 +195,7 @@ def mask_with_pil(ys, xs, yslice, xslice):
     img = Image.new('L', (lx, ly), 0)
     try:
         draw = Image.core.draw(img.im)
-        draw.draw_polygon(rxys, 255, 1, width=0)
-        draw.draw_polygon(rxys, 0, 0, width=0)
+        draw.draw_polygon(rxys, 255, 1)
     except TypeError:
         from PIL import ImageDraw
         draw = ImageDraw.Draw(img)

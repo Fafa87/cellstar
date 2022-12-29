@@ -7,7 +7,7 @@ input_image = imageio.imread("input_images/sample_brightfield.tif")
 print ("Input image shape: {0} and dtype: {1}"
        .format(input_image.shape, input_image.dtype))
 
-segmentator = cellstar.Segmentation(segmentation_precision=9, avg_cell_diameter=35)
+segmentator = cellstar.Segmentation(segmentation_precision=11, avg_cell_diameter=27)
 segmentator.set_frame(input_image)
 segmentation, snakes = segmentator.run_segmentation()
 

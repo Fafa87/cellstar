@@ -68,5 +68,5 @@ setuptools.setup(
         "pytest"
     ],
     url="https://github.com/Fafa87/cellstar",
-    version="2.0.0"
+    version="2.0.1"
 )

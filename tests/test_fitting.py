@@ -4,6 +4,7 @@ This file contains CellStar fitting tests.
 Date: 2013-2016
 Website: http://cellstar-algorithm.org/
 """
+import pathlib
 import random
 import unittest
 
@@ -19,6 +20,7 @@ import cellstar.parameter_fitting.pf_process as process
 import cellstar.parameter_fitting.pf_rank_process as rank_process
 
 from cellstar.segmentation import Segmentation
+import cellstar.utils.debug_util
 from tests.input_utils import *
 
 
@@ -83,6 +85,9 @@ class TestFitting(unittest.TestCase):
         # self.assertLessEqual(0.65, segmentation_quality)
 
     def test_rank_fitting(self):
+        output_dir = pathlib.Path(prepare_output_dir("rank_fitting"))
+        cellstar.utils.debug_util.debug_image_path = str(output_dir)
+
         img = prepare_image((80, 80))
         gt = np.zeros((80, 80), dtype=int)
         draw_weak_cell(img, (60, 20), 12)
@@ -93,45 +98,44 @@ class TestFitting(unittest.TestCase):
         draw_disc(gt, (30, 40), 7, 3)
         img = finish_image(img)
 
-        cellstar = Segmentation(11, 20)
+        segmenter = Segmentation(11, 20)
 
         # break parameters
-        encoded = params.pf_rank_parameters_encode(cellstar.parameters)
+        encoded = params.pf_rank_parameters_encode(segmenter.parameters)
         one_params = [0.1 for k in encoded]
         one_decoded = params.pf_rank_parameters_decode(one_params)
-        broken_params = PFRankSnake.merge_rank_parameters(cellstar.parameters, one_decoded)
+        broken_params = PFRankSnake.merge_rank_parameters(segmenter.parameters, one_decoded)
 
-        cellstar.parameters = broken_params
+        segmenter.parameters = broken_params
 
-        cellstar.set_frame(img)
-        segmentation, snakes = cellstar.run_segmentation()
+        segmenter.set_frame(img)
+        segmentation, snakes = segmenter.run_segmentation()
 
         # fail miserably (best snakes are nowhere close)
         best3 = get_best_mask(segmentation, 3)
         segmentation_quality = calculate_diff_fraction(best3, gt)
         self.assertLessEqual(segmentation_quality, 0.01)
-        cells_inside_gt_mask = np.count_nonzero((best3 > 0) & (gt > 0)) / np.count_nonzero((best3 > 0))
+        cells_inside_gt_mask = np.count_nonzero((best3 > 0) & (gt > 0)) / float(np.count_nonzero((best3 > 0)))
         self.assertLessEqual(cells_inside_gt_mask, 0.1)
 
-        new_params, _ = run_rank_pf(img, None, None, gt, cellstar.parameters)
-        cellstar = Segmentation(11, 20)
-        cellstar.parameters = new_params
-        cellstar.set_frame(img)
+        new_params, _ = run_rank_pf(img, None, None, gt, segmenter.parameters)
+        segmenter = Segmentation(11, 20)
+        segmenter.parameters = new_params
+        segmenter.set_frame(img)
 
-        segmentation2, snakes2 = cellstar.run_segmentation()
+        segmentation2, snakes2 = segmenter.run_segmentation()
 
         self.assertLessEqual(3, segmentation2.max())
         self.assertLessEqual(3, len(snakes2))
 
         # find best 3 objects
         best3 = get_best_mask(segmentation2, 3)
-        snake3 = snakes2[:3]
         segmentation_quality = calculate_diff_fraction(best3, gt)
-        self.assertLessEqual(0.3, segmentation_quality)  # there was no contour fitting
+        self.assertLessEqual(0.5, segmentation_quality)
 
         object_diffs = calculate_diffs_per_object(best3, gt)
         self.assertLessEqual(0.2, min(object_diffs))
 
         # check how much resulting snakes are inside ground truth
-        cells_inside_gt_mask = np.count_nonzero((best3 > 0) & (gt > 0)) / np.count_nonzero((best3 > 0))
+        cells_inside_gt_mask = np.count_nonzero((best3 > 0) & (gt > 0)) / float(np.count_nonzero((best3 > 0)))
         self.assertLessEqual(0.9, cells_inside_gt_mask)

@@ -21,9 +21,9 @@ class TestSegmentation(unittest.TestCase):
     def test_no_objects(self):
         img = prepare_image((50, 50))
 
-        cellstar = Segmentation(9, 10)
-        cellstar.set_frame(img)
-        segmentation, snakes = cellstar.run_segmentation()
+        segmentor = Segmentation(9, 10)
+        segmentor.set_frame(img)
+        segmentation, snakes = segmentor.run_segmentation()
 
         self.assertEqual(0, segmentation.max())
         self.assertEqual(0, len(snakes))
@@ -34,9 +34,9 @@ class TestSegmentation(unittest.TestCase):
         draw_cell(img, (30, 15), 8)
         img = finish_image(img, gauss=1, noise=0)
 
-        cellstar = Segmentation(9, 10)
-        cellstar.set_frame(img)
-        segmentation, snakes = cellstar.run_segmentation()
+        segmentor = Segmentation(9, 10)
+        segmentor.set_frame(img)
+        segmentation, snakes = segmentor.run_segmentation()
 
         self.assertEqual(2, segmentation.max())
         self.assertEqual(2, len(snakes))
@@ -55,19 +55,19 @@ class TestSegmentation(unittest.TestCase):
         img[50:70, 50:70] = 1
         img[50:70, 10:30] = 0
 
-        cellstar = Segmentation(9, 10)
-        cellstar.set_frame(img)
-        segmentation, snakes = cellstar.run_segmentation()
+        segmentor = Segmentation(9, 10)
+        segmentor.set_frame(img)
+        segmentation, snakes = segmentor.run_segmentation()
 
         self.assertLess(segmentation.max(), 2)
         self.assertLess(len(snakes), 2)
 
         ignore_mask = (img == 1) | (img == 0)
-        cellstar = Segmentation(9, 10)
-        cellstar.set_frame(img)
-        cellstar.set_mask(ignore_mask)
+        segmentor = Segmentation(9, 10)
+        segmentor.set_frame(img)
+        segmentor.set_mask(ignore_mask)
 
-        segmentation, snakes = cellstar.run_segmentation()
+        segmentation, snakes = segmentor.run_segmentation()
         self.assertEqual(2, segmentation.max())
         self.assertEqual(2, len(snakes))
 
@@ -88,19 +88,19 @@ class TestSegmentation(unittest.TestCase):
         draw_cell(background, (30, 40), 9)
         img = finish_image(img, gauss=1, noise=0)
 
-        cellstar = Segmentation(9, 14)
-        cellstar.set_frame(img)
-        segmentation, snakes = cellstar.run_segmentation()
+        segmentor = Segmentation(9, 14)
+        segmentor.set_frame(img)
+        segmentation, snakes = segmentor.run_segmentation()
 
         # background noise is returned as cell
         self.assertEqual(3, segmentation.max())
         self.assertEqual(3, len(snakes))
 
-        cellstar = Segmentation(9, 14)
-        cellstar.set_frame(img)
-        cellstar.set_background(background)
+        segmentor = Segmentation(9, 14)
+        segmentor.set_frame(img)
+        segmentor.set_background(background)
 
-        segmentation, snakes = cellstar.run_segmentation()
+        segmentation, snakes = segmentor.run_segmentation()
         self.assertEqual(2, segmentation.max())
         self.assertEqual(2, len(snakes))
 
@@ -116,14 +116,14 @@ class TestSegmentation(unittest.TestCase):
         draw_disc(gt, (180, 70), 20, 3)
         img = finish_image(img, gauss=2, noise=0)
 
-        cellstar = Segmentation(11, 60)
-        cellstar.set_frame(img)
-        segmentation, snakes = cellstar.run_segmentation()
+        segmentor = Segmentation(11, 60)
+        segmentor.set_frame(img)
+        segmentation, snakes = segmentor.run_segmentation()
 
         self.assertEqual(3, segmentation.max())
         self.assertEqual(3, len(snakes))
 
-        object_diffs = calculate_diffs_per_object(segmentation, gt)
+        object_diffs = calculate_ious_per_object(segmentation, gt)
         self.assertLessEqual(0.75, min(object_diffs))
 
     def test_sample_image(self):

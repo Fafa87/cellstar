@@ -9,17 +9,6 @@ import os
 import numpy as np
 import scipy.ndimage as image
 
-import cellstar.utils.debug_util as debug_util
-
-
-def turn_on_debug():
-    debug_util.DEBUGING = True
-
-
-def turn_off_debug():
-    debug_util.DEBUGING = False
-
-
 TESTS = os.path.dirname(__file__)
 
 
@@ -83,7 +72,7 @@ def get_best_mask(seg, num):
     return res
 
 
-def calculate_diff_fraction(seg, gt):
+def iou(seg, gt):
     """
     @type seg: np.ndarray
     @type gt: np.ndarray
@@ -91,8 +80,9 @@ def calculate_diff_fraction(seg, gt):
     return (float(np.count_nonzero(seg & gt))) / np.count_nonzero(seg | gt)
 
 
-def calculate_diffs_per_object(seg, gt):
+def calculate_ious_per_object(seg, gt):
     """
+    For each segmentation object calculate the best iou selected from all object in ground truth.
     @type seg: np.ndarray
     @type gt: np.ndarray
     """
@@ -103,13 +93,9 @@ def calculate_diffs_per_object(seg, gt):
     res = []
     for s in seg_masks:
         if len(gt_masks) > 0:
-            diffs = [calculate_diff_fraction(s, g) for g in gt_masks]
+            diffs = [iou(s, g) for g in gt_masks if g.any()]
             best_id = np.argmax(diffs)
-            if diffs[best_id] == 0:
-                res.append(0)
-                continue
             res.append(diffs[best_id])
-            gt_masks.pop(best_id)
         else:
             res.append(0)
     return res

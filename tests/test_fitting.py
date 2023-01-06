@@ -42,37 +42,37 @@ class TestFitting(unittest.TestCase):
         draw_disc(gt, (30, 40), 9, 3)
         img = finish_image(img)
 
-        cellstar = Segmentation(11, 16)
+        segmentor = Segmentation(11, 16)
 
         # break parameters
-        weights = cellstar.parameters["segmentation"]["stars"]["sizeWeight"]
-        encoded = params.pf_parameters_encode(cellstar.parameters)
+        weights = segmentor.parameters["segmentation"]["stars"]["sizeWeight"]
+        encoded = params.pf_parameters_encode(segmentor.parameters)
         one_params = [0.5 for k in encoded]
         one_params[3] = 0.001
         one_decoded = params.pf_parameters_decode(one_params, weights)
-        broken_params = PFSnake.merge_parameters(cellstar.parameters, one_decoded)
+        broken_params = PFSnake.merge_parameters(segmentor.parameters, one_decoded)
 
-        cellstar.parameters = broken_params
+        segmentor.parameters = broken_params
 
-        cellstar.set_frame(img)
-        segmentation, snakes = cellstar.run_segmentation()
+        segmentor.set_frame(img)
+        segmentation, snakes = segmentor.run_segmentation()
 
         # fail miserably (not all snakes are found)
         self.assertGreater(3, segmentation.max())
         self.assertGreater(3, len(snakes))
 
-        new_params, _ = run_pf(img, None, None, gt, cellstar.parameters, 11, 16)
-        cellstar = Segmentation(11, 16)
-        cellstar.parameters = new_params
-        cellstar.set_frame(img)
+        new_params, _ = run_pf(img, None, None, gt, segmentor.parameters, 11, 16)
+        segmentor = Segmentation(11, 16)
+        segmentor.parameters = new_params
+        segmentor.set_frame(img)
 
-        segmentation2, snakes2 = cellstar.run_segmentation()
+        segmentation2, snakes2 = segmentor.run_segmentation()
 
         self.assertLessEqual(3, segmentation2.max())
         self.assertLessEqual(3, len(snakes2))
 
         # find best 3 objects
-        object_diffs = calculate_diffs_per_object(segmentation2, gt)
+        object_diffs = calculate_ious_per_object(segmentation2, gt)
         object_diffs.sort(reverse=True)
         assert object_diffs[0] > 0.65
         assert object_diffs[1] > 0.65
@@ -80,7 +80,7 @@ class TestFitting(unittest.TestCase):
 
         # No ranking fitting done so it may not be the best mask, thus below test is incorrect.
         # best3 = get_best_mask(segmentation2, 3)
-        # segmentation_quality = calculate_diff_fraction(best3, gt)
+        # segmentation_quality = iou(best3, gt)
         # print("segmentation_quality", segmentation_quality)
         # self.assertLessEqual(0.65, segmentation_quality)
 
@@ -113,7 +113,7 @@ class TestFitting(unittest.TestCase):
 
         # fail miserably (best snakes are nowhere close)
         best3 = get_best_mask(segmentation, 3)
-        segmentation_quality = calculate_diff_fraction(best3, gt)
+        segmentation_quality = iou(best3, gt)
         self.assertLessEqual(segmentation_quality, 0.01)
         cells_inside_gt_mask = np.count_nonzero((best3 > 0) & (gt > 0)) / float(np.count_nonzero((best3 > 0)))
         self.assertLessEqual(cells_inside_gt_mask, 0.1)
@@ -130,10 +130,10 @@ class TestFitting(unittest.TestCase):
 
         # find best 3 objects
         best3 = get_best_mask(segmentation2, 3)
-        segmentation_quality = calculate_diff_fraction(best3, gt)
+        segmentation_quality = iou(best3, gt)
         self.assertLessEqual(0.5, segmentation_quality)
 
-        object_diffs = calculate_diffs_per_object(best3, gt)
+        object_diffs = calculate_ious_per_object(best3, gt)
         self.assertLessEqual(0.2, min(object_diffs))
 
         # check how much resulting snakes are inside ground truth

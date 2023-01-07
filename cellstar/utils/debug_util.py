@@ -29,13 +29,14 @@ EXPLORE = False
 try:
     import imageio
     import matplotlib
-    import matplotlib.pyplot as plt
 
     if not SHOW:
         try:
             matplotlib.use('Agg')
         except:
             pass
+
+    import matplotlib.pyplot as plt
 except:
     DEBUGING = False  # turn off debugging images if unavailable (e.g. in CP 2.2 BETA)
 

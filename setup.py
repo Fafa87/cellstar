@@ -5,7 +5,7 @@ if sys.version_info[0] == 2:
     numpy_version = "numpy>=1.16"
     scipy_version = "scipy>=1.2.3"
 else:
-    numpy_version = "numpy>=1.17<=1.23.5"
+    numpy_version = "numpy>=1.17,<=1.23.5"
     scipy_version = "scipy>=1.5.3"
 
 with open("README.rst") as f:

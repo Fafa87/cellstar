@@ -26,11 +26,15 @@ There are three ways of using CellStar:
 
 - python package https://github.com/Fafa87/cellstar (`pip install cellstar`)
 
-- plugin for CellProfiler 2.2 http://cellstar-algorithm.strikingly.com/#download
+- plugin for CellProfiler http://cellstar-algorithm.strikingly.com/#download
+    The plugin allows to simply auto-adapt cellstar parameters to the input imagery that you want to segment.
+    The package includes not only the plugin itself but also examples of its usage to guide users on how to achieve best segmentation on a given type of imagery.
+    The latest version is:
+    - 2.0.2 for CellProfiler 4.2.4 available `here <https://drive.google.com/u/0/uc?id=1mhmwUuuYg4ZZQ80rCvmgCGiNHTsq5W6s&export=download>`_.
+
 
 - matlab version for manual curation http://cellstar-algorithm.strikingly.com/#download
 
-The plugin package includes not only the plugin itself but also examples of its usage to guide users on how to achieve best segmentation on a given type of imagery.
 
 How to use package
 ------------------
@@ -47,7 +51,7 @@ See and run examples/use_cellstar.py as well as tests for more details.
 
 Wide range of example usages
 ----------------------------
-During the testing phase of our plugin it turned out that combining parameter fitting and CellProfiler pipeline flow can result in a very flexible solution. In order to show that and also provide a quick starting point for users the `Official user guide <https://drive.google.com/file/d/0B3to8FwFxuTHNnJZbXRIdTdWTFE/view>`_ was prepared.
+During the testing phase of our plugin it turned out that combining parameter fitting and CellProfiler pipeline flow can result in a very flexible solution. In order to show that and also provide a quick starting point for users the `Official user guide <https://drive.google.com/file/d/0B3to8FwFxuTHNnJZbXRIdTdWTFE/view?usp=share_link&resourcekey=0-ii-gxvLOwkdY_ZQhvfGMKA>`_ was prepared. It is also a part of CellProfiler plugin package.
 
 It contains the ready to use segmentation solution for a wide range of various imagery which includes:
 

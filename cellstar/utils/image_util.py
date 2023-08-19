@@ -86,18 +86,18 @@ def image_dilate(image, radius):
              contain_pixel(image.shape, (ys[1] + radius, xs[1] + radius))
     ys, xs = (lp[0], hp[0]), (lp[1], hp[1])
     morphology_element = get_circle_kernel(radius)
-    dilated_part = sp.ndimage.morphology.binary_dilation(image[ys[0]:ys[1], xs[0]:xs[1]], morphology_element)
+    dilated_part = sp.ndimage.binary_dilation(image[ys[0]:ys[1], xs[0]:xs[1]], morphology_element)
     image[ys[0]:ys[1], xs[0]:xs[1]] = dilated_part
     return image
 
 
 def image_dilate_with_element(image, n):
-    return sp.ndimage.morphology.grey_dilation(image, size=(n, n))
+    return sp.ndimage.grey_dilation(image, size=(n, n))
 
 
 def image_erode(image, radius):
     morphology_element = get_circle_kernel(radius)
-    return sp.ndimage.morphology.binary_erosion(image, morphology_element)
+    return sp.ndimage.binary_erosion(image, morphology_element)
 
 
 def fill_foreground_holes(mask, kernel_size, minimal_hole_size, min_cluster_area_scaled, mask_min_radius_scaled):
@@ -159,10 +159,10 @@ def fill_holes(mask, kernel_size, minimal_hole_size):
             else:
                 # shrink components and check if they fell apart
                 # close holes
-                components_slice = sp.ndimage.morphology.binary_closing(components_slice, morphology_element)
+                components_slice = sp.ndimage.binary_closing(components_slice, morphology_element)
 
                 # erode holes
-                components_slice = sp.ndimage.morphology.binary_erosion(components_slice, morphology_element)
+                components_slice = sp.ndimage.binary_erosion(components_slice, morphology_element)
 
                 # don't invade masked pixels
                 components_slice &= np.logical_not(new_mask[slice])

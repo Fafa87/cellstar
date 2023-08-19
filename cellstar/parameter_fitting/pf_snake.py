@@ -11,8 +11,8 @@ import random
 
 random.seed(1)  # make it deterministic
 import numpy as np
-import scipy.ndimage.morphology as morph
-import scipy.ndimage.measurements as measure
+import scipy.ndimage as morph
+import scipy.ndimage as measure
 
 from cellstar.utils.calc_util import to_int
 from cellstar.core.seed import Seed

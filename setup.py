@@ -4,9 +4,16 @@ import setuptools
 if sys.version_info[0] == 2:
     numpy_version = "numpy>=1.16"
     scipy_version = "scipy>=1.2.3"
+    pillow_version = "pillow<=6.2.2"
+    matplotlib_version = "matplotlib<=2.2.5"
+    imageio_version = "imageio<=2.6.1"
 else:
     numpy_version = "numpy>=1.17,<=1.23.5"
     scipy_version = "scipy>=1.5.3"
+    pillow_version = "pillow<=9.2"
+    matplotlib_version = "matplotlib>=3.2.2"
+    imageio_version = "imageio>=2.21.1"
+
 
 with open("README.rst") as f:
     long_description = f.read()
@@ -40,6 +47,7 @@ setuptools.setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Image Recognition",
         "Topic :: Scientific/Engineering"
@@ -51,9 +59,9 @@ setuptools.setup(
     install_requires=[
         numpy_version,
         scipy_version,
-        "pillow<=6.2.2",
-        "matplotlib<=2.2.5",
-        "imageio<=2.6.1",
+        pillow_version,
+        matplotlib_version,
+        imageio_version,
         "pathlib"
     ],
     keywords=["brightfield", "yeast", "segmentation", "adapting"],
@@ -68,5 +76,5 @@ setuptools.setup(
         "pytest"
     ],
     url="https://github.com/Fafa87/cellstar",
-    version="2.0.2"
+    version="2.0.3"
 )

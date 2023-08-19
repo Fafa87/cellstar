@@ -61,7 +61,7 @@ def loop_connected_components(mask):
 
     if mask.sum() > 0:
         labeled = sp_image.label(mask)[0]
-        components = sp_image.measurements.find_objects(labeled)
+        components = sp_image.find_objects(labeled)
         c_fin = [(s[0].stop - s[0].start, s[0].stop - 1) for s in components]
         if len(c_fin) > 1 and mask[0] and mask[-1]:
             c_fin[0] = c_fin[0][0] + c_fin[-1][0], c_fin[0][1]

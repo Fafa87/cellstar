@@ -292,7 +292,7 @@ class SeedGrid(object):
         self._init_grid()
 
     def _init_grid(self):
-        self._grid = np.empty((self._size_x, self._size_y), dtype=np.object)
+        self._grid = np.empty((self._size_x, self._size_y), dtype=object)
         self._grid.fill([])
 
     def _resize(self, to_x, to_y):

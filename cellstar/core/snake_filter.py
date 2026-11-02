@@ -6,6 +6,7 @@ Website: http://cellstar-algorithm.org/
 """
 
 import logging
+
 import math
 
 import numpy as np
@@ -52,12 +53,12 @@ class SnakeFilter(object):
 
         return False
 
-    def filter(self, snakes):
+    def filter(self, snakes, level='WARNING'):
         """
         @type snakes: list[Snake]
         @rtype: list[Snake]
         """
-        logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
+        logging.basicConfig(format='%(asctime)-15s %(message)s', level=getattr(logging,level))
         logger = logging.getLogger(__package__)
         log_message = "Discarding snake {0} for {1}: {2}"
 

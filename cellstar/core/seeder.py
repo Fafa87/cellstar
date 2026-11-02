@@ -16,14 +16,14 @@ class Seeder(object):
     Find places for seeds based on images and previously found snakes.
     """
 
-    def __init__(self, images, parameters):
+    def __init__(self, images, parameters, random_state=1):
         """
         @type images: core.image_repo.ImageRepo
         @type parameters: dict
         """
         self.images = images
-        np.random.seed(abs(np.sum(images.image).astype(np.int64)))
-        random.seed(abs(np.sum(images.image).astype(np.int64)))
+        np.random.seed(random_state)#(abs(np.sum(images.image).astype(np.int64)))
+        random.seed(random_state)#(abs(np.sum(images.image).astype(np.int64)))
         self.parameters = parameters
         self.cluster_min_distance = self.parameters["segmentation"]["seeding"]["minDistance"] \
                                     * self.parameters["segmentation"]["avgCellDiameter"]
